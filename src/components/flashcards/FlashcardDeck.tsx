@@ -1,20 +1,22 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { motion } from "framer-motion";
 import { useSessionStore, QueuedCard } from "@/store/useSessionStore";
 import Flashcard from "./Flashcard";
 import GradingControls from "./GradingControls";
-import { motion } from "framer-motion";
 
 export default function FlashcardDeck({ initialQueue }: { initialQueue: QueuedCard[] }) {
   const { setQueue, sessionXp, currentIndex } = useSessionStore();
   const [isMounted, setIsMounted] = useState(false);
 
+  // Hydrate the Zustand store with the server-fetched queue
   useEffect(() => {
     setQueue(initialQueue);
     setIsMounted(true);
   }, [initialQueue, setQueue]);
 
+  // Prevent server/client hydration mismatch errors
   if (!isMounted) return null;
 
   const totalCards = initialQueue.length;
@@ -22,14 +24,15 @@ export default function FlashcardDeck({ initialQueue }: { initialQueue: QueuedCa
 
   return (
     <div className="flex w-full max-w-md flex-col items-center">
-      {/* Gamification header */}
-      <div className="w-full mb-8 flex flex-col gap-2">
-        <div className="flex justify-between items-center text-sm font-medium text-neutral-400">
-          <span>Session XP: <span className="text-white">{sessionXp}</span></span>
-          <span>{Math.min(currentIndex, totalCards)} / {totalCards} Cards</span>
+      {/* Gamification Header: XP & Progress */}
+      <div className="mb-8 w-full flex flex-col gap-3">
+        <div className="flex items-center justify-between text-sm font-medium text-neutral-400 uppercase tracking-wider">
+          <span>XP <span className="text-white ml-1">{sessionXp}</span></span>
+          <span>{Math.min(currentIndex, totalCards)} / {totalCards}</span>
         </div>
-        {/* Progress Bar */}
-        <div className="h-2 w-full overflow-hidden rounded-full bg-neutral-900">
+        
+        {/* Animated Progress Bar */}
+        <div className="h-1.5 w-full overflow-hidden rounded-full bg-neutral-900">
           <motion.div 
             className="h-full bg-white"
             initial={{ width: 0 }}

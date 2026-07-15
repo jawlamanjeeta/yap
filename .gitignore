@@ -1,0 +1,38 @@
+# Dependencies
+/node_modules
+/.pnp
+.pnp.js
+
+# Testing
+/coverage
+
+# Next.js Production Build Outputs
+/.next/
+/out/
+
+# Production Build Caches
+.next
+.swc
+
+# Local Environment Variables (Crucial for AI/DB secrets)
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Database / Prisma
+/prisma/migrations
+*.db
+*.db-journal
+
+# Debug / System Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+.eslintcache
+
+# Operating System files
+.DS_Store
+Thumbs.db

@@ -1,0 +1,52 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String     @id @default(cuid())
+  email         String     @unique
+  name          String?
+  xp            Int        @default(0)
+  currentStreak Int        @default(0)
+  userCards     UserCard[]
+}
+
+model Deck {
+  id          String   @id @default(cuid())
+  title       String
+  description String?
+  cards       Card[]
+}
+
+model Card {
+  id        String     @id @default(cuid())
+  deckId    String
+  frontText String
+  backText  String
+  language  String
+  
+  deck      Deck       @relation(fields: [deckId], references: [id], onDelete: Cascade)
+  userCards UserCard[]
+}
+
+
+model UserCard {
+  id         String   @id @default(cuid())
+  userId     String
+  cardId     String
+  interval   Int      @default(0)
+  repetition Int      @default(0)
+  easeFactor Float    @default(2.5)
+  nextReview DateTime @default(now())
+
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  card       Card     @relation(fields: [cardId], references: [id], onDelete: Cascade)
+
+  // A user should only have one active statistical record per flashcard
+  @@unique([userId, cardId])
+}

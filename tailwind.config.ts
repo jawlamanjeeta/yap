@@ -11,12 +11,12 @@ const config: Config = {
     extend: {
       colors: {
         yap: {
-          paper: "#eef8f3",
-          ink: "#10201f",
-          blue: "#2563eb",
-          mint: "#00a67e",
-          coral: "#ff4d6d",
-          gold: "#f7b801",
+          paper: "#f8efd0",
+          ink: "#080907",
+          blue: "#55d7ff",
+          mint: "#b8ff4f",
+          coral: "#ff6b8a",
+          gold: "#ffd84d",
         },
       },
     },

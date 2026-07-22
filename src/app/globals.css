@@ -3,14 +3,14 @@
 @tailwind utilities;
 
 :root {
-  --background: #eef8f3;
-  --foreground: #10201f;
-  --surface: #ffffff;
-  --surface-soft: #e3f3ef;
-  --accent-blue: #2563eb;
-  --accent-mint: #00a67e;
-  --accent-coral: #ff4d6d;
-  --accent-gold: #f7b801;
+  --background: #080907;
+  --foreground: #f8efd0;
+  --surface: #10130d;
+  --surface-soft: #171b12;
+  --accent-blue: #55d7ff;
+  --accent-mint: #b8ff4f;
+  --accent-coral: #ff6b8a;
+  --accent-gold: #ffd84d;
   --font-display: "Bahnschrift", "Aptos Display", "Segoe UI Variable Display",
     "SF Pro Display", "Inter Tight", "Inter", system-ui, sans-serif;
   --font-body: "Segoe UI Variable Text", "Aptos", "Inter", "Segoe UI", system-ui,
@@ -23,6 +23,10 @@ body {
   font-family: var(--font-body);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+html {
+  scroll-behavior: smooth;
 }
 
 h1,
@@ -50,10 +54,37 @@ textarea {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #94cfc0;
+  background: #3a3328;
   border-radius: 3px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #00a67e;
+  background: #b8ff4f;
+}
+
+@keyframes pixel-flicker {
+  0%,
+  100% {
+    opacity: 0.55;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+@keyframes scan-pass {
+  0% {
+    transform: translateY(-110%);
+  }
+  100% {
+    transform: translateY(110%);
+  }
+}
+
+.pixel-flicker {
+  animation: pixel-flicker 1.2s steps(2, end) infinite;
+}
+
+.scan-pass {
+  animation: scan-pass 3.5s linear infinite;
 }

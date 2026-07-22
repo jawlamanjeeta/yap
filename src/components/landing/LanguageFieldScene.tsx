@@ -3,7 +3,7 @@
 import { ContactShadows, Float, Sparkles, Text } from "@react-three/drei";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { useMemo, useRef, useState } from "react";
-import { Group, MathUtils } from "three";
+import { Group, MathUtils, Object3D } from "three";
 
 type Token = {
   label: string;
@@ -13,36 +13,79 @@ type Token = {
   rotationSpeed: number;
 };
 
+type PixelCell = {
+  id: string;
+  color: string;
+  emissive?: string;
+  position: [number, number, number];
+};
+
 const tokens: Token[] = [
   {
     label: "hola",
     translation: "hello",
-    color: "#f7b801",
-    position: [-2.25, 1.12, -0.65],
-    rotationSpeed: 0.55,
+    color: "#ffd84d",
+    position: [-2.6, 1.32, -0.55],
+    rotationSpeed: 0.4,
   },
   {
     label: "merci",
     translation: "thanks",
-    color: "#2563eb",
-    position: [2.15, 1.52, -1.05],
-    rotationSpeed: -0.45,
+    color: "#55d7ff",
+    position: [2.6, 1.38, -0.7],
+    rotationSpeed: -0.36,
   },
   {
     label: "lernen",
     translation: "learn",
-    color: "#00a67e",
-    position: [-1.85, -1.28, -0.15],
-    rotationSpeed: -0.35,
+    color: "#b8ff4f",
+    position: [-2.35, -1.32, -0.2],
+    rotationSpeed: -0.32,
   },
   {
     label: "hanasu",
     translation: "speak",
-    color: "#ff4d6d",
-    position: [2.05, -1.05, -0.35],
-    rotationSpeed: 0.4,
+    color: "#ff6b8a",
+    position: [2.25, -1.2, -0.24],
+    rotationSpeed: 0.35,
   },
 ];
+
+const duckSprite = [
+  "...........R...........",
+  "..........ARA..........",
+  ".........ARRRA.........",
+  "........AROORA........",
+  ".......AROOORA........",
+  "......XXXRRRXXX.......",
+  ".....XYYYYYYYYYX......",
+  "....XYYYYYYYYYYYX.....",
+  "...XYYEYYYYYEYYYX.....",
+  "...XYYWYYYYYWYYYX.....",
+  "...XYYYYOOOOYYYYX.....",
+  "...XYPPOOOOPPYYYX.....",
+  "....XYYYYOOYYYYX......",
+  "....XYYYYYYYYYYX......",
+  "...XYYYYYYYYYYYYX.....",
+  "..XYYYYYYYYYYYYYYX....",
+  "..XYYYYHHHHYYYYYYX....",
+  "...XYYYYYYYYYYYYX.....",
+  "....XYYYYYYYYYYX......",
+  ".....XOO....OOX.......",
+  "......OO....OO........",
+];
+
+const palette: Record<string, { color: string; emissive?: string }> = {
+  X: { color: "#3a2416" },
+  Y: { color: "#ffd84d", emissive: "#4f3500" },
+  H: { color: "#f2b72a", emissive: "#3c2800" },
+  O: { color: "#ff8a1f", emissive: "#5f1d00" },
+  P: { color: "#ff9db0", emissive: "#4c0717" },
+  E: { color: "#0a0909" },
+  W: { color: "#ffffff" },
+  R: { color: "#ff3b19", emissive: "#8a1300" },
+  A: { color: "#ff7a1f", emissive: "#7a2100" },
+};
 
 export default function LanguageFieldScene({
   activeToken,
@@ -54,15 +97,15 @@ export default function LanguageFieldScene({
   return (
     <Canvas
       shadows
-      camera={{ position: [0, 0, 6.9], fov: 42 }}
+      camera={{ position: [0, 0.05, 7.4], fov: 39 }}
       dpr={[1, 1.75]}
-      gl={{ antialias: true, alpha: true }}
+      gl={{ antialias: false, alpha: true }}
       className="h-full w-full"
     >
-      <ambientLight intensity={1.55} />
-      <directionalLight position={[4, 5, 5]} intensity={2.6} castShadow />
-      <pointLight position={[-3, -2, 4]} intensity={5.5} color="#2563eb" />
-      <pointLight position={[3.5, 2, 3]} intensity={4.8} color="#ff4d6d" />
+      <ambientLight intensity={1.25} />
+      <directionalLight position={[3.8, 4.8, 5.2]} intensity={2.35} castShadow />
+      <pointLight position={[-3.2, 1.7, 3.4]} intensity={4.2} color="#55d7ff" />
+      <pointLight position={[3.2, -1.6, 3.2]} intensity={4.4} color="#ff6b8a" />
       <SceneContent activeToken={activeToken} onTokenChange={onTokenChange} />
     </Canvas>
   );
@@ -75,52 +118,35 @@ function SceneContent({
   activeToken: string;
   onTokenChange: (token: string) => void;
 }) {
-  const groupRef = useRef<Group>(null);
+  const rigRef = useRef<Group>(null);
+  const activeTokenData = tokens.find((token) => token.label === activeToken) ?? tokens[0];
   const tokenMap = useMemo(() => new Map(tokens.map((token) => [token.label, token])), []);
 
   useFrame((state, delta) => {
-    const group = groupRef.current;
-    if (!group) return;
+    const rig = rigRef.current;
+    if (!rig) return;
 
-    group.rotation.y += delta * 0.14;
-    group.rotation.x = MathUtils.lerp(group.rotation.x, state.pointer.y * 0.13, 0.06);
-    group.rotation.z = MathUtils.lerp(group.rotation.z, state.pointer.x * -0.07, 0.06);
+    rig.rotation.y += delta * 0.08;
+    rig.rotation.x = MathUtils.lerp(rig.rotation.x, state.pointer.y * 0.09, 0.06);
+    rig.rotation.z = MathUtils.lerp(rig.rotation.z, state.pointer.x * -0.04, 0.06);
   });
 
   return (
-    <group ref={groupRef}>
+    <group ref={rigRef}>
       <Sparkles
-        count={64}
-        speed={0.3}
-        size={2.3}
-        scale={[7, 3.8, 2.6]}
-        color="#00a67e"
-        opacity={0.32}
+        count={82}
+        speed={0.26}
+        size={1.9}
+        scale={[6.7, 3.9, 2.8]}
+        color="#b8ff4f"
+        opacity={0.26}
       />
 
-      <Float speed={1.3} rotationIntensity={0.16} floatIntensity={0.32}>
-        <mesh position={[0, -0.05, -0.02]} castShadow receiveShadow>
-          <icosahedronGeometry args={[1.18, 2]} />
-          <meshStandardMaterial
-            color="#10201f"
-            roughness={0.52}
-            metalness={0.1}
-            emissive="#00a67e"
-            emissiveIntensity={0.05}
-          />
-        </mesh>
+      <OrbitRings accent={activeTokenData.color} />
+      <VoiceMeter accent={activeTokenData.color} />
 
-        <mesh position={[0, 0, 0.04]} rotation={[0, 0, 0.14]}>
-          <torusGeometry args={[1.72, 0.018, 16, 120]} />
-          <meshStandardMaterial color="#f7b801" roughness={0.3} metalness={0.3} />
-        </mesh>
-
-        <mesh position={[0, 0, 0.08]} rotation={[0.55, 0.2, -0.38]}>
-          <torusGeometry args={[2.18, 0.012, 16, 120]} />
-          <meshStandardMaterial color="#2563eb" roughness={0.42} metalness={0.18} />
-        </mesh>
-
-        <DuckMascot />
+      <Float speed={1.55} rotationIntensity={0.1} floatIntensity={0.3}>
+        <PixelDuckMascot accent={activeTokenData.color} />
       </Float>
 
       {tokens.map((token) => (
@@ -133,145 +159,146 @@ function SceneContent({
         />
       ))}
 
-      <mesh position={[0, -2.25, -0.65]} rotation={[-Math.PI / 2, 0, 0]} receiveShadow>
-        <ringGeometry args={[1.35, 3.45, 96]} />
-        <meshStandardMaterial color="#94cfc0" roughness={0.85} transparent opacity={0.34} />
+      <mesh position={[0, -2.08, -0.7]} rotation={[-Math.PI / 2, 0, 0]} receiveShadow>
+        <circleGeometry args={[2.85, 4]} />
+        <meshStandardMaterial color="#17201d" roughness={0.85} transparent opacity={0.46} />
       </mesh>
       <ContactShadows
-        position={[0, -2.04, 0]}
-        opacity={0.28}
-        scale={6.2}
-        blur={1.7}
-        far={4}
-        color="#10201f"
+        position={[0, -2, 0]}
+        opacity={0.3}
+        scale={5.5}
+        blur={1.3}
+        far={3.2}
+        color="#050605"
       />
     </group>
   );
 }
 
-function DuckMascot() {
-  const duckRef = useRef<Group>(null);
+function PixelDuckMascot({ accent }: { accent: string }) {
+  const mascotRef = useRef<Group>(null);
+  const cells = useMemo(() => buildDuckCells(), []);
 
   useFrame((state) => {
-    const duck = duckRef.current;
-    if (!duck) return;
+    const mascot = mascotRef.current;
+    if (!mascot) return;
 
-    duck.position.y = Math.sin(state.clock.elapsedTime * 1.7) * 0.045;
-    duck.rotation.y = MathUtils.lerp(duck.rotation.y, state.pointer.x * 0.16, 0.05);
-    duck.rotation.x = MathUtils.lerp(duck.rotation.x, state.pointer.y * 0.08, 0.05);
+    const t = state.clock.elapsedTime;
+    mascot.position.y = Math.sin(t * 2.2) * 0.05;
+    mascot.rotation.y = MathUtils.lerp(mascot.rotation.y, -0.2 + state.pointer.x * 0.16, 0.06);
+    mascot.rotation.x = MathUtils.lerp(mascot.rotation.x, 0.08 + state.pointer.y * 0.08, 0.06);
   });
 
   return (
-    <group ref={duckRef} position={[0, 0.02, 1.16]} rotation={[0.03, -0.08, 0]} scale={0.95}>
-      <mesh position={[0, -0.28, 0]} scale={[0.98, 0.74, 0.78]} castShadow>
-        <sphereGeometry args={[0.88, 64, 32]} />
-        <meshStandardMaterial
-          color="#ffd84d"
-          roughness={0.44}
-          metalness={0.03}
-          emissive="#f7b801"
-          emissiveIntensity={0.05}
-        />
-      </mesh>
+    <group ref={mascotRef} position={[0, 0.06, 0.85]} rotation={[0.08, -0.2, 0]} scale={1.08}>
+      <group position={[0.1, -0.05, -0.16]}>
+        {cells.map((cell) => (
+          <Voxel key={cell.id} cell={cell} />
+        ))}
+      </group>
 
-      <mesh position={[0, 0.55, 0.08]} scale={[0.84, 0.78, 0.76]} castShadow>
-        <sphereGeometry args={[0.62, 64, 32]} />
-        <meshStandardMaterial
-          color="#ffe778"
-          roughness={0.42}
-          metalness={0.03}
-          emissive="#f7b801"
-          emissiveIntensity={0.04}
-        />
+      <mesh position={[0.1, -0.24, -0.24]} scale={[1.72, 1.2, 0.12]} receiveShadow>
+        <boxGeometry args={[1, 1, 1]} />
+        <meshStandardMaterial color={accent} roughness={0.72} transparent opacity={0.13} />
       </mesh>
+    </group>
+  );
+}
 
-      <mesh position={[-0.62, 0.52, 0.08]} scale={[0.12, 0.42, 0.2]} rotation={[0, 0, -0.16]}>
-        <sphereGeometry args={[0.58, 32, 16]} />
-        <meshStandardMaterial color="#2b2017" roughness={0.5} />
-      </mesh>
-      <mesh position={[0.62, 0.52, 0.08]} scale={[0.12, 0.42, 0.2]} rotation={[0, 0, 0.16]}>
-        <sphereGeometry args={[0.58, 32, 16]} />
-        <meshStandardMaterial color="#2b2017" roughness={0.5} />
-      </mesh>
+function Voxel({ cell }: { cell: PixelCell }) {
+  return (
+    <mesh position={cell.position} castShadow receiveShadow>
+      <boxGeometry args={[0.145, 0.145, 0.24]} />
+      <meshStandardMaterial
+        color={cell.color}
+        roughness={0.5}
+        metalness={0.02}
+        emissive={cell.emissive ?? "#000000"}
+        emissiveIntensity={cell.emissive ? 0.12 : 0}
+      />
+    </mesh>
+  );
+}
 
-      <mesh position={[-0.22, 0.68, 0.6]} scale={[1, 1.08, 0.72]}>
-        <sphereGeometry args={[0.075, 24, 16]} />
-        <meshStandardMaterial color="#10201f" roughness={0.22} />
-      </mesh>
-      <mesh position={[0.22, 0.68, 0.6]} scale={[1, 1.08, 0.72]}>
-        <sphereGeometry args={[0.075, 24, 16]} />
-        <meshStandardMaterial color="#10201f" roughness={0.22} />
-      </mesh>
-      <mesh position={[-0.245, 0.71, 0.65]} scale={[1, 1, 0.7]}>
-        <sphereGeometry args={[0.024, 16, 12]} />
-        <meshStandardMaterial color="#ffffff" roughness={0.2} />
-      </mesh>
-      <mesh position={[0.195, 0.71, 0.65]} scale={[1, 1, 0.7]}>
-        <sphereGeometry args={[0.024, 16, 12]} />
-        <meshStandardMaterial color="#ffffff" roughness={0.2} />
-      </mesh>
+function buildDuckCells() {
+  const cellSize = 0.15;
+  const maxWidth = Math.max(...duckSprite.map((row) => row.length));
 
-      <mesh position={[0, 0.46, 0.78]} rotation={[Math.PI / 2, 0, Math.PI / 4]} scale={[1, 0.68, 0.26]} castShadow>
-        <coneGeometry args={[0.28, 0.58, 4]} />
-        <meshStandardMaterial
-          color="#ff8a1f"
-          roughness={0.34}
-          metalness={0.02}
-          emissive="#ff4d00"
-          emissiveIntensity={0.08}
-        />
-      </mesh>
-      <mesh position={[0, 0.37, 0.73]} scale={[0.72, 0.16, 0.16]} castShadow>
-        <sphereGeometry args={[0.34, 32, 16]} />
-        <meshStandardMaterial color="#d95f00" roughness={0.42} />
-      </mesh>
+  return duckSprite.flatMap((row, rowIndex) =>
+    row.split("").flatMap((key, columnIndex) => {
+      const swatch = palette[key];
+      if (!swatch) return [];
 
-      <mesh position={[-0.4, 0.38, 0.6]} scale={[0.16, 0.08, 0.04]}>
-        <sphereGeometry args={[0.5, 24, 12]} />
-        <meshStandardMaterial color="#ff9fb1" roughness={0.5} />
-      </mesh>
-      <mesh position={[0.4, 0.38, 0.6]} scale={[0.16, 0.08, 0.04]}>
-        <sphereGeometry args={[0.5, 24, 12]} />
-        <meshStandardMaterial color="#ff9fb1" roughness={0.5} />
-      </mesh>
+      const x = (columnIndex - maxWidth / 2) * cellSize;
+      const y = (duckSprite.length / 2 - rowIndex) * cellSize;
+      const z = key === "X" ? -0.01 : 0.02;
 
-      <mesh position={[-0.72, -0.24, 0.14]} rotation={[0, 0.16, -0.28]} scale={[0.22, 0.52, 0.1]} castShadow>
-        <sphereGeometry args={[0.74, 32, 16]} />
-        <meshStandardMaterial color="#f7b801" roughness={0.48} />
-      </mesh>
-      <mesh position={[0.72, -0.24, 0.14]} rotation={[0, -0.16, 0.28]} scale={[0.22, 0.52, 0.1]} castShadow>
-        <sphereGeometry args={[0.74, 32, 16]} />
-        <meshStandardMaterial color="#f7b801" roughness={0.48} />
-      </mesh>
+      return [
+        {
+          id: `${rowIndex}-${columnIndex}`,
+          color: swatch.color,
+          emissive: swatch.emissive,
+          position: [x, y, z] as [number, number, number],
+        },
+      ];
+    }),
+  );
+}
 
-      <mesh position={[-0.28, -0.96, 0.28]} scale={[0.3, 0.1, 0.16]} castShadow>
-        <sphereGeometry args={[0.5, 24, 12]} />
-        <meshStandardMaterial color="#ff8a1f" roughness={0.38} />
-      </mesh>
-      <mesh position={[0.28, -0.96, 0.28]} scale={[0.3, 0.1, 0.16]} castShadow>
-        <sphereGeometry args={[0.5, 24, 12]} />
-        <meshStandardMaterial color="#ff8a1f" roughness={0.38} />
-      </mesh>
+function OrbitRings({ accent }: { accent: string }) {
+  const ringRef = useRef<Group>(null);
 
-      <group position={[0, 1.04, 0.08]} rotation={[0.02, 0, 0]}>
-        <mesh position={[0, 0.2, 0]} rotation={[0, 0, -0.08]} scale={[0.9, 1.12, 0.75]} castShadow>
-          <coneGeometry args={[0.24, 0.92, 7]} />
+  useFrame((_, delta) => {
+    const ring = ringRef.current;
+    if (!ring) return;
+
+    ring.rotation.z += delta * 0.18;
+    ring.rotation.y -= delta * 0.1;
+  });
+
+  return (
+    <group ref={ringRef} position={[0.04, 0.02, 0.2]}>
+      <mesh rotation={[0.62, 0.12, -0.32]}>
+        <torusGeometry args={[1.82, 0.014, 8, 96]} />
+        <meshStandardMaterial color="#55d7ff" roughness={0.3} emissive="#10243a" emissiveIntensity={0.12} />
+      </mesh>
+      <mesh rotation={[0.12, -0.52, 0.36]}>
+        <torusGeometry args={[2.18, 0.012, 8, 112]} />
+        <meshStandardMaterial color={accent} roughness={0.35} emissive={accent} emissiveIntensity={0.08} />
+      </mesh>
+      <mesh rotation={[-0.72, 0.24, 0.2]}>
+        <torusGeometry args={[2.52, 0.008, 8, 120]} />
+        <meshStandardMaterial color="#f8efd0" roughness={0.4} transparent opacity={0.55} />
+      </mesh>
+    </group>
+  );
+}
+
+function VoiceMeter({ accent }: { accent: string }) {
+  const meterRef = useRef<Group>(null);
+
+  useFrame((state) => {
+    const bars = meterRef.current?.children ?? [];
+    bars.forEach((bar: Object3D, index) => {
+      const target = 0.35 + Math.abs(Math.sin(state.clock.elapsedTime * 2.6 + index * 0.8)) * 0.9;
+      bar.scale.y = MathUtils.lerp(bar.scale.y, target, 0.14);
+      bar.position.y = -1.9 + target * 0.12;
+    });
+  });
+
+  return (
+    <group ref={meterRef} position={[-1.88, -0.05, 1.08]} rotation={[0.04, 0.24, 0]}>
+      {Array.from({ length: 7 }, (_, index) => (
+        <mesh key={index} position={[index * 0.12, -1.9, 0]} scale={[1, 0.45, 1]} castShadow>
+          <boxGeometry args={[0.07, 0.42, 0.08]} />
           <meshStandardMaterial
-            color="#ff6b1f"
-            roughness={0.34}
-            emissive="#ff4d00"
-            emissiveIntensity={0.12}
+            color={index % 2 === 0 ? accent : "#b8ff4f"}
+            roughness={0.45}
+            emissive={index % 2 === 0 ? accent : "#b8ff4f"}
+            emissiveIntensity={0.18}
           />
         </mesh>
-        <mesh position={[-0.18, 0.06, 0.03]} rotation={[0.08, 0, 0.26]} scale={[0.58, 0.74, 0.55]}>
-          <coneGeometry args={[0.2, 0.62, 7]} />
-          <meshStandardMaterial color="#ff4d6d" roughness={0.36} emissive="#ff4d6d" emissiveIntensity={0.1} />
-        </mesh>
-        <mesh position={[0.16, 0.02, 0.04]} rotation={[0.08, 0, -0.24]} scale={[0.48, 0.62, 0.5]}>
-          <coneGeometry args={[0.18, 0.52, 7]} />
-          <meshStandardMaterial color="#ffd84d" roughness={0.32} emissive="#f7b801" emissiveIntensity={0.1} />
-        </mesh>
-      </group>
+      ))}
     </group>
   );
 }
@@ -295,12 +322,12 @@ function LanguageToken({
     if (!group) return;
 
     group.rotation.y += delta * token.rotationSpeed;
-    const targetScale = isActive || isHovered ? 1.13 : 1;
-    group.scale.setScalar(MathUtils.lerp(group.scale.x, targetScale, 0.12));
+    const targetScale = isActive || isHovered ? 1.12 : 1;
+    group.scale.setScalar(MathUtils.lerp(group.scale.x, targetScale, 0.13));
   });
 
   return (
-    <Float speed={1.15} rotationIntensity={0.12} floatIntensity={0.28}>
+    <Float speed={1.1} rotationIntensity={0.09} floatIntensity={0.25}>
       <group ref={tokenRef} position={token.position}>
         <mesh
           onClick={() => onTokenChange(token.label)}
@@ -311,35 +338,35 @@ function LanguageToken({
           onPointerOut={() => setIsHovered(false)}
           castShadow
         >
-          <boxGeometry args={[1.25, 0.72, 0.14]} />
+          <boxGeometry args={[1.08, 0.58, 0.16]} />
           <meshStandardMaterial
-            color={isActive || isHovered ? token.color : "#ffffff"}
-            roughness={0.42}
-            metalness={0.04}
+            color={isActive || isHovered ? token.color : "#f8efd0"}
+            roughness={0.55}
+            metalness={0.02}
             emissive={token.color}
             emissiveIntensity={isActive || isHovered ? 0.16 : 0.02}
           />
         </mesh>
 
         <Text
-          position={[0, 0.02, 0.091]}
-          fontSize={0.22}
-          maxWidth={1}
+          position={[0, 0.02, 0.096]}
+          fontSize={0.18}
+          maxWidth={0.96}
           anchorX="center"
           anchorY="middle"
-          color={isActive || isHovered ? "#ffffff" : "#10201f"}
+          color={isActive || isHovered ? "#0b0d0b" : "#17110d"}
         >
           {token.label}
         </Text>
 
         {isActive && (
           <Text
-            position={[0, -0.58, 0.09]}
-            fontSize={0.11}
-            maxWidth={1.4}
+            position={[0, -0.45, 0.09]}
+            fontSize={0.1}
+            maxWidth={1.25}
             anchorX="center"
             anchorY="middle"
-            color="#10201f"
+            color="#f8efd0"
           >
             {activeTranslation}
           </Text>

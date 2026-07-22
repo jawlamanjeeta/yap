@@ -9,6 +9,7 @@
 # Next.js Production Build Outputs
 /.next/
 /out/
+next-env.d.ts
 
 # Production Build Caches
 .next

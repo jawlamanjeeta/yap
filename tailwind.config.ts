@@ -11,9 +11,12 @@ const config: Config = {
     extend: {
       colors: {
         yap: {
-          yellow: "#ffeb99",
-          orange: "#f59e0b",
-          flame: "#f43f5e",
+          paper: "#eef8f3",
+          ink: "#10201f",
+          blue: "#2563eb",
+          mint: "#00a67e",
+          coral: "#ff4d6d",
+          gold: "#f7b801",
         },
       },
     },

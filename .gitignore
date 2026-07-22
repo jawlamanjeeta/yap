@@ -13,6 +13,7 @@
 # Production Build Caches
 .next
 .swc
+*.tsbuildinfo
 
 # Local Environment Variables (Crucial for AI/DB secrets)
 .env

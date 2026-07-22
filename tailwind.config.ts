@@ -8,7 +8,15 @@ const config: Config = {
     "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
   ],
   theme: {
-    extend: {},
+    extend: {
+      colors: {
+        yap: {
+          yellow: "#ffeb99",
+          orange: "#f59e0b",
+          flame: "#f43f5e",
+        },
+      },
+    },
   },
   plugins: [],
 };

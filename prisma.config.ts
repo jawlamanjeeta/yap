@@ -1,9 +1,10 @@
-import "dotenv/config";
+import dotenv from "dotenv";
+dotenv.config({ path: ".env.local" });
+
 import { defineConfig } from "@prisma/config";
 
 export default defineConfig({
-  earlyAccess: true,
   migrations: {
-    seed: "npx tsx prisma/seed.ts",
+    seed: "npm exec tsx prisma/seed.ts",
   },
 });

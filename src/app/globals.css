@@ -3,8 +3,8 @@
 @tailwind utilities;
 
 :root {
-  --background: #000000;
-  --foreground: #ffffff;
+  --background: #f7f4ef;
+  --foreground: #0a0a0a;
 }
 
 body {
@@ -15,18 +15,20 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Custom minimal scrollbars */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
 }
+
 ::-webkit-scrollbar-track {
-  background: #000000;
+  background: transparent;
 }
+
 ::-webkit-scrollbar-thumb {
-  background: #222222;
+  background: #c9c2b8;
   border-radius: 3px;
 }
+
 ::-webkit-scrollbar-thumb:hover {
-  background: #333333;
+  background: #a99f93;
 }

@@ -1,13 +1,13 @@
 import { NextResponse } from "next/server";
-import OpenAI from "openai";
-
-// Automatically uses process.env.OPENAI_API_KEY
-const openai = new OpenAI();
+import { getOpenAIClient } from "@/lib/openai";
+import { scorePronunciationTranscript } from "@/utils/cefr";
 
 export async function POST(req: Request) {
   try {
+    const openai = getOpenAIClient();
     const formData = await req.formData();
     const audioFile = formData.get("file") as File;
+    const language = formData.get("language")?.toString();
 
     if (!audioFile) {
       return NextResponse.json(
@@ -19,9 +19,13 @@ export async function POST(req: Request) {
     const response = await openai.audio.transcriptions.create({
       file: audioFile,
       model: "whisper-1",
+      language,
     });
 
-    return NextResponse.json({ text: response.text });
+    return NextResponse.json({
+      text: response.text,
+      pronunciation: scorePronunciationTranscript(response.text),
+    });
   } catch (error) {
     console.error("Transcription error:", error);
     return NextResponse.json(

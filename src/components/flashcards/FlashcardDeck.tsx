@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { useSessionStore, QueuedCard } from "@/store/useSessionStore";
+import { QueuedCard, useSessionStore } from "@/store/useSessionStore";
 import Flashcard from "./Flashcard";
 import GradingControls from "./GradingControls";
 
@@ -10,13 +10,11 @@ export default function FlashcardDeck({ initialQueue }: { initialQueue: QueuedCa
   const { setQueue, sessionXp, currentIndex } = useSessionStore();
   const [isMounted, setIsMounted] = useState(false);
 
-  // Hydrate the Zustand store with the server-fetched queue
   useEffect(() => {
     setQueue(initialQueue);
     setIsMounted(true);
   }, [initialQueue, setQueue]);
 
-  // Prevent server/client hydration mismatch errors
   if (!isMounted) return null;
 
   const totalCards = initialQueue.length;
@@ -24,17 +22,19 @@ export default function FlashcardDeck({ initialQueue }: { initialQueue: QueuedCa
 
   return (
     <div className="flex w-full max-w-md flex-col items-center">
-      {/* Gamification Header: XP & Progress */}
-      <div className="mb-8 w-full flex flex-col gap-3">
-        <div className="flex items-center justify-between text-sm font-medium text-neutral-400 uppercase tracking-wider">
-          <span>XP <span className="text-white ml-1">{sessionXp}</span></span>
-          <span>{Math.min(currentIndex, totalCards)} / {totalCards}</span>
+      <div className="mb-6 flex w-full flex-col gap-3 rounded-lg border border-neutral-200 bg-white p-4 shadow-sm dark:border-neutral-800 dark:bg-neutral-900">
+        <div className="flex items-center justify-between text-sm font-bold uppercase tracking-[0.12em] text-neutral-500 dark:text-neutral-400">
+          <span>
+            XP <span className="ml-1 text-neutral-950 dark:text-white">{sessionXp}</span>
+          </span>
+          <span>
+            {Math.min(currentIndex, totalCards)} / {totalCards}
+          </span>
         </div>
-        
-        {/* Animated Progress Bar */}
-        <div className="h-1.5 w-full overflow-hidden rounded-full bg-neutral-900">
-          <motion.div 
-            className="h-full bg-white"
+
+        <div className="h-2 w-full overflow-hidden rounded-full bg-neutral-100 dark:bg-neutral-800">
+          <motion.div
+            className="h-full bg-amber-500"
             initial={{ width: 0 }}
             animate={{ width: `${progress}%` }}
             transition={{ duration: 0.5, ease: "easeInOut" }}

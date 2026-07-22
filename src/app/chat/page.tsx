@@ -4,23 +4,17 @@ import ChatInterface from "@/components/chat/ChatInterface";
 
 export default function ChatPage() {
   return (
-    <main className="flex min-h-screen flex-col items-center bg-black p-6">
-      {/* Navigation & Context Header */}
-      <div className="w-full max-w-2xl flex items-center justify-between mb-8 mt-4">
+    <main className="min-h-screen bg-[#f7f4ef] p-4 text-neutral-950 dark:bg-neutral-950 dark:text-white sm:p-6">
+      <div className="mx-auto flex w-full max-w-6xl flex-col gap-6">
         <Link 
           href="/" 
-          className="group flex items-center text-sm font-medium text-neutral-500 hover:text-white transition-colors duration-200"
+          className="inline-flex w-fit items-center gap-2 rounded-lg border border-neutral-300 bg-white px-3 py-2 text-sm font-semibold transition hover:bg-neutral-100 dark:border-neutral-800 dark:bg-neutral-900 dark:hover:bg-neutral-800"
         >
-          <ArrowLeft className="mr-2 h-4 w-4 transition-transform group-hover:-translate-x-1" />
+          <ArrowLeft className="h-4 w-4" />
           Dashboard
         </Link>
-        <span className="text-xs font-semibold uppercase tracking-widest text-neutral-600">
-          AI Conversation
-        </span>
+        <ChatInterface />
       </div>
-
-      {/* The interactive client component */}
-      <ChatInterface />
     </main>
   );
 }

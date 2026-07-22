@@ -1,7 +1,7 @@
 "use server";
 
-import { prisma } from "@/lib/db";
-import { calculateSM2 } from "@/utils/sm2";
+import { prisma } from "@/lib/prisma";
+import { scheduleNextReview } from "@/utils/sm2";
 
 /**
  * Fetches a batch of cards that are currently due for a specific user and deck.
@@ -48,18 +48,12 @@ export async function submitCardReview(userCardId: string, quality: number) {
       throw new Error("User card record not found.");
     }
 
-    // 2. Run the pure SM-2 math function
-    const { interval, repetition, easeFactor } = calculateSM2(quality, {
+    const { interval, repetition, easeFactor, nextReview } = scheduleNextReview(quality, {
       interval: currentRecord.interval,
       repetition: currentRecord.repetition,
       easeFactor: currentRecord.easeFactor,
     });
 
-    // 3. Calculate the exact Date object for the next review
-    const nextReview = new Date();
-    nextReview.setDate(nextReview.getDate() + interval);
-
-    // 4. Persist the updated stats to PostgreSQL
     const updatedCard = await prisma.userCard.update({
       where: { id: userCardId },
       data: {
@@ -69,6 +63,16 @@ export async function submitCardReview(userCardId: string, quality: number) {
         nextReview,
       },
     });
+
+    if (quality >= 3) {
+      await prisma.user.update({
+        where: { id: currentRecord.userId },
+        data: {
+          xp: { increment: quality * 10 },
+          currentStreak: { increment: currentRecord.repetition === 0 ? 1 : 0 },
+        },
+      });
+    }
 
     return { success: true, data: updatedCard };
   } catch (error) {

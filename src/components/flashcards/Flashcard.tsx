@@ -1,24 +1,28 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { useEffect, useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
 import { useSessionStore } from "@/store/useSessionStore";
 
 export default function Flashcard() {
-  // Connect directly to the global state
   const { queue, currentIndex, isFinished } = useSessionStore();
   const [isFlipped, setIsFlipped] = useState(false);
 
-  // Automatically reset the flip state when Zustand advances to the next card
   useEffect(() => {
     setIsFlipped(false);
   }, [currentIndex]);
 
-  // Fallback UI when the session is over
   if (isFinished() || queue.length === 0) {
     return (
-      <div className="flex h-80 w-full max-w-sm items-center justify-center rounded-2xl border border-neutral-800 bg-black text-neutral-400">
-        <p className="font-medium text-lg">Session Complete! 🎉</p>
+      <div className="flex h-80 w-full max-w-sm flex-col items-center justify-center rounded-lg border border-neutral-200 bg-white p-6 text-center shadow-sm dark:border-neutral-800 dark:bg-neutral-900">
+        <p className="text-lg font-black tracking-tight">
+          {queue.length === 0 ? "No cards due right now" : "Session complete"}
+        </p>
+        <p className="mt-2 text-sm leading-6 text-neutral-500 dark:text-neutral-400">
+          {queue.length === 0
+            ? "Your scheduled reviews are caught up for this deck."
+            : "Nice work. The reviewed cards have new SM-2 dates."}
+        </p>
       </div>
     );
   }
@@ -26,11 +30,10 @@ export default function Flashcard() {
   const currentCard = queue[currentIndex].card;
 
   return (
-    // [perspective:1000px] gives the 3D rotation depth
     <div className="relative h-80 w-full max-w-sm [perspective:1000px]">
       <AnimatePresence mode="wait">
         <motion.div
-          key={queue[currentIndex].id} // Changing the key triggers the exit/enter animations
+          key={queue[currentIndex].id}
           initial={{ x: 50, opacity: 0 }}
           animate={{
             x: 0,
@@ -47,22 +50,20 @@ export default function Flashcard() {
           className="relative h-full w-full cursor-pointer [transform-style:preserve-3d]"
           onClick={() => setIsFlipped(!isFlipped)}
         >
-          {/* Front Face */}
-          <div className="absolute inset-0 flex flex-col items-center justify-center rounded-2xl border border-neutral-800 bg-black p-6 shadow-2xl [backface-visibility:hidden]">
-            <span className="absolute top-4 right-4 text-xs font-semibold text-neutral-600 uppercase tracking-widest">
+          <div className="absolute inset-0 flex flex-col items-center justify-center rounded-lg border border-neutral-200 bg-white p-6 shadow-sm [backface-visibility:hidden] dark:border-neutral-800 dark:bg-neutral-900">
+            <span className="absolute right-4 top-4 text-xs font-bold uppercase tracking-[0.12em] text-neutral-400">
               {currentCard.language}
             </span>
-            <h2 className="text-4xl font-bold text-white text-center">
+            <h2 className="text-center text-4xl font-black tracking-tight text-neutral-950 dark:text-white">
               {currentCard.frontText}
             </h2>
-            <p className="absolute bottom-6 text-sm text-neutral-600 animate-pulse">
+            <p className="absolute bottom-6 text-sm font-semibold text-neutral-400">
               Tap to reveal
             </p>
           </div>
 
-          {/* Back Face */}
-          <div className="absolute inset-0 flex flex-col items-center justify-center rounded-2xl border border-neutral-700 bg-neutral-900 p-6 shadow-2xl [backface-visibility:hidden] [transform:rotateY(180deg)]">
-            <h2 className="text-3xl font-medium text-white text-center">
+          <div className="absolute inset-0 flex flex-col items-center justify-center rounded-lg border border-emerald-200 bg-emerald-50 p-6 shadow-sm [backface-visibility:hidden] [transform:rotateY(180deg)] dark:border-emerald-500/30 dark:bg-emerald-500/10">
+            <h2 className="text-center text-3xl font-black tracking-tight text-neutral-950 dark:text-white">
               {currentCard.backText}
             </h2>
           </div>

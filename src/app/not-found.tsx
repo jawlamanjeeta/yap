@@ -11,7 +11,7 @@ export default function NotFound() {
         <div className="space-y-2">
           <h2 className="text-2xl font-bold tracking-tight">Page Not Found</h2>
           <p className="text-sm text-neutral-500 max-w-sm mx-auto">
-            We couldn't find the page or flashcard deck you were looking for.
+            We couldn&apos;t find the page or flashcard deck you were looking for.
           </p>
         </div>
         <Link

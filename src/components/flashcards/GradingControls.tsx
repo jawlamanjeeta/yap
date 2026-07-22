@@ -1,16 +1,18 @@
 "use client";
 
-import { useEffect, useCallback } from "react";
+import { useCallback, useEffect } from "react";
 import { useSessionStore } from "@/store/useSessionStore";
+
+const gradeOptions = [
+  { key: 1, label: "Again", tone: "hover:border-red-400 hover:bg-red-50 dark:hover:bg-red-500/10" },
+  { key: 2, label: "Hard", tone: "hover:border-amber-400 hover:bg-amber-50 dark:hover:bg-amber-500/10" },
+  { key: 3, label: "Good", tone: "hover:border-sky-400 hover:bg-sky-50 dark:hover:bg-sky-500/10" },
+  { key: 4, label: "Easy", tone: "hover:border-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-500/10" },
+];
 
 export default function GradingControls() {
   const { gradeCurrentCard, isFinished, queue } = useSessionStore();
 
-  // Map the 4-button interface to the 0-5 SM-2 quality scale
-  // 1 = Again (Blackout) -> Quality 1
-  // 2 = Hard -> Quality 3
-  // 3 = Good -> Quality 4
-  // 4 = Easy -> Quality 5
   const handleGrade = useCallback(
     (buttonIndex: number) => {
       const qualityMap: Record<number, number> = {
@@ -19,71 +21,47 @@ export default function GradingControls() {
         3: 4,
         4: 5,
       };
-      
+
       const quality = qualityMap[buttonIndex];
       if (quality !== undefined) {
         gradeCurrentCard(quality);
       }
     },
-    [gradeCurrentCard]
+    [gradeCurrentCard],
   );
 
-  // Global keyboard listener for rapid grading
   useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      // Prevent triggering if the user is typing in an input field (for future chat context)
-      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.target instanceof HTMLInputElement || event.target instanceof HTMLTextAreaElement) {
         return;
       }
-      
+
       if (isFinished()) return;
 
-      if (e.key === "1") handleGrade(1);
-      if (e.key === "2") handleGrade(2);
-      if (e.key === "3") handleGrade(3);
-      if (e.key === "4") handleGrade(4);
+      if (event.key === "1") handleGrade(1);
+      if (event.key === "2") handleGrade(2);
+      if (event.key === "3") handleGrade(3);
+      if (event.key === "4") handleGrade(4);
     };
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [handleGrade, isFinished]);
 
-  // Hide the controls if the session is over or hasn't started
   if (isFinished() || queue.length === 0) return null;
 
   return (
-    <div className="flex w-full max-w-sm gap-2 mt-6">
-      <button
-        onClick={() => handleGrade(1)}
-        className="group flex flex-1 flex-col items-center justify-center rounded-xl border border-neutral-800 bg-black py-3 hover:bg-neutral-900 transition-colors duration-200"
-      >
-        <span className="mb-1 text-xs text-neutral-600 group-hover:text-neutral-400 transition-colors">1</span>
-        <span className="text-sm font-medium text-white">Again</span>
-      </button>
-
-      <button
-        onClick={() => handleGrade(2)}
-        className="group flex flex-1 flex-col items-center justify-center rounded-xl border border-neutral-800 bg-black py-3 hover:bg-neutral-900 transition-colors duration-200"
-      >
-        <span className="mb-1 text-xs text-neutral-600 group-hover:text-neutral-400 transition-colors">2</span>
-        <span className="text-sm font-medium text-white">Hard</span>
-      </button>
-
-      <button
-        onClick={() => handleGrade(3)}
-        className="group flex flex-1 flex-col items-center justify-center rounded-xl border border-neutral-800 bg-black py-3 hover:bg-neutral-900 transition-colors duration-200"
-      >
-        <span className="mb-1 text-xs text-neutral-600 group-hover:text-neutral-400 transition-colors">3</span>
-        <span className="text-sm font-medium text-white">Good</span>
-      </button>
-
-      <button
-        onClick={() => handleGrade(4)}
-        className="group flex flex-1 flex-col items-center justify-center rounded-xl border border-neutral-800 bg-black py-3 hover:bg-neutral-900 transition-colors duration-200"
-      >
-        <span className="mb-1 text-xs text-neutral-600 group-hover:text-neutral-400 transition-colors">4</span>
-        <span className="text-sm font-medium text-white">Easy</span>
-      </button>
+    <div className="mt-4 grid w-full max-w-sm grid-cols-2 gap-2 sm:grid-cols-4">
+      {gradeOptions.map((item) => (
+        <button
+          key={item.key}
+          onClick={() => handleGrade(item.key)}
+          className={`rounded-lg border border-neutral-200 bg-white py-3 text-center transition dark:border-neutral-800 dark:bg-neutral-900 ${item.tone}`}
+        >
+          <span className="block text-xs font-bold text-neutral-400">{item.key}</span>
+          <span className="text-sm font-black text-neutral-950 dark:text-white">{item.label}</span>
+        </button>
+      ))}
     </div>
   );
 }

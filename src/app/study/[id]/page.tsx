@@ -1,66 +1,99 @@
-import { headers } from "next/headers";
+import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
-import { auth } from "@/lib/auth";
+import { ArrowLeft } from "lucide-react";
 import { prisma } from "@/lib/prisma";
-import FlashcardDeck from "@/components/FlashcardDeck";
+import FlashcardDeck from "@/components/flashcards/FlashcardDeck";
 
-export default async function StudyPage({ 
-  params 
-}: { 
-  params: Promise<{ id: string }> 
+export const dynamic = "force-dynamic";
+
+export default async function StudyPage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
 }) {
-  // 1. Next.js 15 requirement: Await the dynamic URL parameters
   const { id } = await params;
 
-  // 2. Validate the Better Auth session
-  const headersList = await headers();
-  const session = await auth.api.getSession({
-    headers: headersList,
+  const user = await prisma.user.findFirst({
+    orderBy: { email: "asc" },
   });
 
-  if (!session?.user) {
-    redirect("/"); // Kick unauthenticated users back to the login gate
+  if (!user) {
+    redirect("/");
   }
 
-  // 3. Fetch the Deck, Cards, and the User's SM-2 Statistics
   const deck = await prisma.deck.findUnique({
     where: { id },
     include: {
-      cards: {
-        include: {
-          // Fetch the statistical record (interval, easeFactor) specific to this user
-          userCards: {
-            where: { userId: session.user.id }
-          }
-        }
-      }
-    }
+      _count: {
+        select: { cards: true },
+      },
+    },
   });
 
-  // 4. Handle invalid URLs gracefully using the not-found.tsx fallback
   if (!deck) {
     notFound();
   }
 
-  // 5. Mount the interactive Client Component
+  const dueCards = await prisma.userCard.findMany({
+    where: {
+      userId: user.id,
+      card: { deckId: id },
+      nextReview: { lte: new Date() },
+    },
+    include: {
+      card: true,
+    },
+    orderBy: {
+      nextReview: "asc",
+    },
+  });
+
+  const initialQueue = dueCards.map((userCard) => ({
+    id: userCard.id,
+    interval: userCard.interval,
+    repetition: userCard.repetition,
+    easeFactor: userCard.easeFactor,
+    card: {
+      id: userCard.card.id,
+      frontText: userCard.card.frontText,
+      backText: userCard.card.backText,
+      language: userCard.card.language,
+    },
+  }));
+
   return (
-    <main className="flex min-h-screen flex-col bg-black p-6 text-white">
-      <div className="mx-auto w-full max-w-3xl mt-12 space-y-8">
-        <header className="border-b border-neutral-800 pb-6">
-          <h1 className="text-2xl font-bold">{deck.title}</h1>
-          {deck.description && (
-            <p className="text-sm text-neutral-500 mt-1">
-              {deck.description}
-            </p>
-          )}
+    <main className="min-h-screen bg-[#f7f4ef] p-4 text-neutral-950 dark:bg-neutral-950 dark:text-white sm:p-6">
+      <div className="mx-auto flex w-full max-w-3xl flex-col gap-6">
+        <Link
+          href="/"
+          className="inline-flex w-fit items-center gap-2 rounded-lg border border-neutral-300 bg-white px-3 py-2 text-sm font-semibold transition hover:bg-neutral-100 dark:border-neutral-800 dark:bg-neutral-900 dark:hover:bg-neutral-800"
+        >
+          <ArrowLeft className="h-4 w-4" />
+          Dashboard
+        </Link>
+
+        <header className="rounded-lg border border-neutral-200 bg-white p-5 shadow-sm dark:border-neutral-800 dark:bg-neutral-900">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+            <div>
+              <p className="text-xs font-bold uppercase tracking-[0.12em] text-amber-600 dark:text-amber-300">
+                SM-2 review session
+              </p>
+              <h1 className="mt-2 text-3xl font-black tracking-tight">{deck.title}</h1>
+              {deck.description && (
+                <p className="mt-2 max-w-xl text-sm leading-6 text-neutral-500 dark:text-neutral-400">
+                  {deck.description}
+                </p>
+              )}
+            </div>
+            <span className="rounded-full bg-neutral-100 px-3 py-1 text-xs font-bold text-neutral-600 dark:bg-neutral-800 dark:text-neutral-300">
+              {initialQueue.length} due / {deck._count.cards} total
+            </span>
+          </div>
         </header>
-        
-        {/* Inject the data into your Framer Motion hardware-accelerated UI */}
-        <FlashcardDeck 
-          cards={deck.cards} 
-          deckId={deck.id} 
-          userId={session.user.id} 
-        />
+
+        <section className="flex justify-center">
+          <FlashcardDeck initialQueue={initialQueue} />
+        </section>
       </div>
     </main>
   );

@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { type CSSProperties, useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
@@ -26,43 +27,19 @@ export default function AnimatedMascot({
 
       gsap.to(".mascot-character", {
         y: -10,
-        rotate: -1.2,
-        duration: 1.55,
+        duration: 1.6,
         ease: "sine.inOut",
         repeat: -1,
         yoyo: true,
       });
 
-      gsap.to(".mascot-eye", {
-        scaleY: 0.08,
-        duration: 0.08,
-        ease: "power1.inOut",
-        repeat: -1,
-        yoyo: true,
-        repeatDelay: 3.2,
-        transformOrigin: "center",
-      });
-
-      gsap.to(".mascot-wing-right", {
-        rotate: -23,
-        x: 10,
-        duration: 0.38,
-        ease: "power2.inOut",
-        repeat: -1,
-        yoyo: true,
-        repeatDelay: 1.8,
-        transformOrigin: "18% 88%",
-      });
-
-      gsap.to(".mascot-flame-piece", {
-        y: -5,
-        scaleY: 1.08,
-        duration: 0.5,
+      gsap.to(".mascot-art", {
+        rotate: -1.5,
+        duration: 1.6,
         ease: "sine.inOut",
         repeat: -1,
         yoyo: true,
-        stagger: 0.1,
-        transformOrigin: "bottom",
+        transformOrigin: "50% 85%",
       });
 
       gsap.to(".mascot-speech", {
@@ -97,16 +74,15 @@ export default function AnimatedMascot({
         ease: "back.out(2)",
       })
       .to(
-        scope.querySelector(".mascot-wing-right"),
+        scope.querySelector(".mascot-art"),
         {
-          rotate: -48,
-          x: 16,
-          y: -8,
-          duration: 0.18,
+          rotate: -8,
+          x: -5,
+          duration: 0.14,
           repeat: 3,
           yoyo: true,
           ease: "power2.inOut",
-          transformOrigin: "18% 88%",
+          transformOrigin: "50% 85%",
         },
         0,
       )
@@ -135,35 +111,16 @@ export default function AnimatedMascot({
         aria-label="Make the yap mascot wave"
         onClick={() => setWaveCount((count) => count + 1)}
       >
-        <span className="mascot-flame" aria-hidden="true">
-          <span className="mascot-flame-piece mascot-flame-left" />
-          <span className="mascot-flame-piece mascot-flame-mid" />
-          <span className="mascot-flame-piece mascot-flame-right" />
+        <span className="mascot-art">
+          <Image
+            src="/yap-duck.png"
+            alt=""
+            width={604}
+            height={711}
+            priority
+            draggable={false}
+          />
         </span>
-
-        <span className="mascot-head" aria-hidden="true">
-          <span className="mascot-side mascot-side-left" />
-          <span className="mascot-side mascot-side-right" />
-          <span className="mascot-eye mascot-eye-left">
-            <span />
-          </span>
-          <span className="mascot-eye mascot-eye-right">
-            <span />
-          </span>
-          <span className="mascot-cheek mascot-cheek-left" />
-          <span className="mascot-cheek mascot-cheek-right" />
-          <span className="mascot-beak mascot-beak-top" />
-          <span className="mascot-beak mascot-beak-bottom" />
-        </span>
-
-        <span className="mascot-body" aria-hidden="true">
-          <span className="mascot-wing mascot-wing-left" />
-          <span className="mascot-wing mascot-wing-right" />
-          <span className="mascot-belly" />
-        </span>
-
-        <span className="mascot-foot mascot-foot-left" aria-hidden="true" />
-        <span className="mascot-foot mascot-foot-right" aria-hidden="true" />
       </button>
 
       <div className="mascot-shadow" aria-hidden="true" />

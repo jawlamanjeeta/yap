@@ -1,17 +1,12 @@
 "use client";
 
-import dynamic from "next/dynamic";
 import Link from "next/link";
 import { type CSSProperties, useEffect, useRef, useState } from "react";
 import { ArrowDown, BookOpen, MessageCircle, Mic, Play, Radio, Sparkles } from "lucide-react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
-
-const LanguageFieldScene = dynamic(() => import("./LanguageFieldScene"), {
-  ssr: false,
-  loading: () => <SceneFallback activeToken="hola" />,
-});
+import AnimatedMascot from "./AnimatedMascot";
 
 gsap.registerPlugin(useGSAP, ScrollTrigger);
 
@@ -255,7 +250,7 @@ export default function LandingHero({
             <div className="absolute inset-x-0 top-0 z-10 flex items-center justify-between border-b border-[#f8efd0]/12 bg-[#080907]/66 px-3 py-2 backdrop-blur">
               <div className="flex items-center gap-2 text-xs font-black uppercase tracking-[0.16em] text-[#f8efd0]/70">
                 <Radio className="h-3.5 w-3.5 text-[#b8ff4f]" />
-                Live rig
+                Mascot rig
               </div>
               <div className="flex h-5 items-end gap-1" aria-hidden="true">
                 {Array.from({ length: 8 }, (_, index) => (
@@ -326,11 +321,12 @@ export default function LandingHero({
               </div>
             </div>
 
-            {prefersReducedMotion ? (
-              <SceneFallback activeToken={activeToken} />
-            ) : (
-              <LanguageFieldScene activeToken={activeToken} onTokenChange={setActiveToken} />
-            )}
+            <AnimatedMascot
+              activeToken={activeToken}
+              accent={activeTokenDetails.color}
+              phrase={activeTokenDetails.line}
+              reducedMotion={prefersReducedMotion}
+            />
           </div>
         </div>
       </div>
@@ -370,31 +366,6 @@ function HeroStat({
       <p className="mt-1 text-[0.62rem] font-black uppercase tracking-[0.16em] text-[#f8efd0]/45">
         {label}
       </p>
-    </div>
-  );
-}
-
-function SceneFallback({ activeToken }: { activeToken: string }) {
-  const active = landingTokens.find((token) => token.label === activeToken) ?? landingTokens[0];
-
-  return (
-    <div className="flex h-full w-full items-center justify-center pt-14">
-      <div
-        className="relative h-72 w-72 [image-rendering:pixelated] sm:h-96 sm:w-96"
-        aria-hidden="true"
-      >
-        <div className="absolute left-1/2 top-[18%] h-8 w-8 -translate-x-1/2 bg-[#ff3b19] shadow-[0_32px_0_#ff7a1f,0_64px_0_#ffd84d]" />
-        <div className="absolute left-1/2 top-[29%] h-28 w-40 -translate-x-1/2 bg-[#ffd84d] shadow-[0_0_0_8px_#3a2416]" />
-        <div className="absolute left-1/2 top-[50%] h-28 w-48 -translate-x-1/2 bg-[#ffd84d] shadow-[0_0_0_8px_#3a2416]" />
-        <div className="absolute left-[34%] top-[39%] h-5 w-5 bg-[#080907] shadow-[4px_4px_0_#fff]" />
-        <div className="absolute left-[58%] top-[39%] h-5 w-5 bg-[#080907] shadow-[4px_4px_0_#fff]" />
-        <div className="absolute left-1/2 top-[49%] h-7 w-24 -translate-x-1/2 bg-[#ff8a1f] shadow-[0_7px_0_#d95f00]" />
-        <div className="absolute left-[29%] top-[50%] h-5 w-7 bg-[#ff9db0]" />
-        <div className="absolute right-[29%] top-[50%] h-5 w-7 bg-[#ff9db0]" />
-        <span className="absolute bottom-7 left-1/2 -translate-x-1/2 rounded-lg bg-[#080907] px-3 py-1 text-xs font-black text-[#f8efd0]">
-          {active.label}
-        </span>
-      </div>
     </div>
   );
 }

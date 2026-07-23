@@ -88,3 +88,365 @@ textarea {
 .scan-pass {
   animation: scan-pass 3.5s linear infinite;
 }
+
+.mascot-stage {
+  position: absolute;
+  inset: 2.85rem 0.75rem 2.4rem;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  image-rendering: pixelated;
+}
+
+.mascot-character {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  z-index: 2;
+  display: block;
+  width: min(72vw, 20rem);
+  height: min(80vw, 24rem);
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  transform: translate(-50%, -42%);
+  transform-style: preserve-3d;
+}
+
+.mascot-character:focus-visible {
+  outline: 3px solid var(--mascot-accent);
+  outline-offset: 6px;
+}
+
+.mascot-character span {
+  position: absolute;
+  display: block;
+}
+
+.mascot-shadow {
+  position: absolute;
+  left: 50%;
+  bottom: 1.1rem;
+  z-index: 1;
+  width: min(58vw, 18rem);
+  height: 3.2rem;
+  border-radius: 50%;
+  background: radial-gradient(ellipse, rgba(0, 0, 0, 0.58), rgba(0, 0, 0, 0) 72%);
+  transform: translateX(-50%);
+  filter: blur(1px);
+}
+
+.mascot-head {
+  left: 50%;
+  top: 4.6rem;
+  z-index: 4;
+  width: 12.6rem;
+  height: 9.15rem;
+  border: 0.45rem solid #3a2416;
+  border-radius: 2.2rem 2.2rem 1.45rem 1.45rem;
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.32), transparent 36%),
+    #ffe778;
+  box-shadow:
+    inset -0.7rem -0.72rem 0 #f7c842,
+    inset 0.45rem 0.45rem 0 #fff4a6,
+    0.42rem 0.42rem 0 rgba(0, 0, 0, 0.18);
+  transform: translateX(-50%);
+}
+
+.mascot-side {
+  top: 2rem;
+  z-index: -1;
+  width: 1.25rem;
+  height: 6.2rem;
+  background: #3a2416;
+}
+
+.mascot-side-left {
+  left: -1.1rem;
+  border-radius: 0.5rem 0 0 0.5rem;
+}
+
+.mascot-side-right {
+  right: -1.1rem;
+  border-radius: 0 0.5rem 0.5rem 0;
+}
+
+.mascot-eye {
+  top: 3rem;
+  z-index: 5;
+  width: 1.45rem;
+  height: 2.1rem;
+  border: 0.18rem solid #140d09;
+  border-radius: 0.38rem;
+  background: #0a0909;
+  box-shadow: 0.15rem 0.18rem 0 rgba(0, 0, 0, 0.2);
+}
+
+.mascot-eye span {
+  right: 0.18rem;
+  top: 0.22rem;
+  width: 0.42rem;
+  height: 0.42rem;
+  background: white;
+}
+
+.mascot-eye-left {
+  left: 2.5rem;
+}
+
+.mascot-eye-right {
+  right: 2.5rem;
+}
+
+.mascot-cheek {
+  top: 5.65rem;
+  z-index: 5;
+  width: 1.35rem;
+  height: 0.95rem;
+  border-radius: 0.16rem;
+  background: #ff9db0;
+  box-shadow: inset -0.18rem -0.12rem 0 #ff7992;
+}
+
+.mascot-cheek-left {
+  left: 1.35rem;
+}
+
+.mascot-cheek-right {
+  right: 1.35rem;
+}
+
+.mascot-beak {
+  left: 50%;
+  z-index: 6;
+  transform: translateX(-50%);
+}
+
+.mascot-beak-top {
+  top: 5.2rem;
+  width: 4.95rem;
+  height: 1.18rem;
+  border: 0.24rem solid #a94200;
+  border-radius: 0.18rem;
+  background: #ff8a1f;
+  box-shadow: inset 0 -0.28rem 0 #d95f00;
+}
+
+.mascot-beak-bottom {
+  top: 6.35rem;
+  width: 5.85rem;
+  height: 0.82rem;
+  border: 0.22rem solid #a94200;
+  border-radius: 0.18rem;
+  background: #e86400;
+}
+
+.mascot-body {
+  left: 50%;
+  top: 12rem;
+  z-index: 3;
+  width: 12.2rem;
+  height: 8.75rem;
+  border: 0.45rem solid #3a2416;
+  border-radius: 1.45rem 1.45rem 2.25rem 2.25rem;
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.3), transparent 36%),
+    #ffd84d;
+  box-shadow:
+    inset -0.7rem -0.75rem 0 #eebd2f,
+    inset 0.55rem 0.45rem 0 #fff197,
+    0.42rem 0.42rem 0 rgba(0, 0, 0, 0.18);
+  transform: translateX(-50%);
+}
+
+.mascot-belly {
+  left: 50%;
+  bottom: 1.15rem;
+  width: 4.2rem;
+  height: 3.2rem;
+  border: 0.26rem solid #b17817;
+  border-radius: 0.6rem;
+  background: rgba(255, 244, 166, 0.5);
+  transform: translateX(-50%);
+}
+
+.mascot-wing {
+  top: 1.1rem;
+  z-index: 4;
+  width: 2.1rem;
+  height: 5.2rem;
+  border: 0.36rem solid #b17817;
+  border-radius: 0.55rem;
+  background: #ffe778;
+  box-shadow: inset -0.28rem -0.35rem 0 #eebd2f;
+}
+
+.mascot-wing-left {
+  left: -0.9rem;
+  rotate: -8deg;
+}
+
+.mascot-wing-right {
+  right: -1rem;
+  rotate: 18deg;
+}
+
+.mascot-foot {
+  top: 20.4rem;
+  z-index: 2;
+  width: 2.2rem;
+  height: 1rem;
+  border: 0.26rem solid #a94200;
+  border-radius: 0.2rem;
+  background: #ff8a1f;
+  box-shadow: inset 0 -0.22rem 0 #d95f00;
+}
+
+.mascot-foot-left {
+  left: 6.2rem;
+}
+
+.mascot-foot-right {
+  right: 6.2rem;
+}
+
+.mascot-flame {
+  left: 50%;
+  top: 0.25rem;
+  z-index: 6;
+  width: 6rem;
+  height: 5.2rem;
+  transform: translateX(-50%);
+}
+
+.mascot-flame-piece {
+  bottom: 0;
+  border: 0.22rem solid #bb2808;
+  background: #ff6b1f;
+  clip-path: polygon(50% 0, 100% 100%, 0 100%);
+  box-shadow: inset -0.24rem -0.2rem 0 #ff3b19;
+}
+
+.mascot-flame-left {
+  left: 0.5rem;
+  width: 2rem;
+  height: 3.5rem;
+  rotate: -18deg;
+}
+
+.mascot-flame-mid {
+  left: 1.9rem;
+  width: 2.45rem;
+  height: 5rem;
+  background: #ff3b19;
+}
+
+.mascot-flame-right {
+  right: 0.45rem;
+  width: 1.8rem;
+  height: 3.9rem;
+  rotate: 18deg;
+}
+
+.mascot-speech {
+  position: absolute;
+  left: 50%;
+  top: 0.7rem;
+  z-index: 7;
+  display: grid;
+  max-width: min(80vw, 17rem);
+  gap: 0.18rem;
+  border: 1px solid rgba(248, 239, 208, 0.2);
+  border-radius: 0.5rem;
+  background: rgba(8, 9, 7, 0.78);
+  padding: 0.72rem 0.85rem;
+  color: #f8efd0;
+  box-shadow: 0.32rem 0.32rem 0 rgba(248, 239, 208, 0.12);
+  transform: translateX(-50%);
+  backdrop-filter: blur(12px);
+}
+
+.mascot-speech::after {
+  position: absolute;
+  left: 50%;
+  bottom: -0.46rem;
+  width: 0.8rem;
+  height: 0.8rem;
+  border-right: 1px solid rgba(248, 239, 208, 0.2);
+  border-bottom: 1px solid rgba(248, 239, 208, 0.2);
+  background: rgba(8, 9, 7, 0.78);
+  content: "";
+  rotate: 45deg;
+  transform: translateX(-50%);
+}
+
+.mascot-speech-token {
+  color: var(--mascot-accent);
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  font-weight: 900;
+  line-height: 1;
+}
+
+.mascot-spark {
+  position: absolute;
+  z-index: 1;
+  width: 0.7rem;
+  height: 0.7rem;
+  background: var(--mascot-accent);
+  box-shadow:
+    0.7rem 0 0 rgba(248, 239, 208, 0.35),
+    0 0.7rem 0 rgba(248, 239, 208, 0.25);
+  animation: pixel-flicker 1.2s steps(2, end) infinite;
+}
+
+.mascot-spark-one {
+  left: 15%;
+  top: 35%;
+}
+
+.mascot-spark-two {
+  right: 12%;
+  top: 42%;
+  animation-delay: 0.2s;
+}
+
+.mascot-spark-three {
+  right: 25%;
+  bottom: 18%;
+  animation-delay: 0.45s;
+}
+
+@media (max-width: 639px) {
+  .mascot-stage {
+    inset: 2.7rem 0.6rem 0.7rem;
+  }
+
+  .mascot-character {
+    width: 13.6rem;
+    height: 16rem;
+    transform: translate(-50%, -35%) scale(0.66);
+    transform-origin: center;
+  }
+
+  .mascot-speech {
+    display: none;
+  }
+
+  .mascot-shadow {
+    bottom: 0.2rem;
+    width: 10rem;
+    height: 2rem;
+  }
+
+  .mascot-spark {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mascot-spark {
+    animation: none;
+  }
+}

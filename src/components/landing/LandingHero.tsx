@@ -2,11 +2,7 @@
 
 import Link from "next/link";
 import { type CSSProperties, useEffect, useRef, useState } from "react";
-import {
-  Headphones,
-  Mic,
-  Sparkles,
-} from "lucide-react";
+import { Mic } from "lucide-react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
@@ -14,15 +10,7 @@ import AnimatedMascot from "./AnimatedMascot";
 
 gsap.registerPlugin(useGSAP, ScrollTrigger);
 
-export default function LandingHero({
-  dueCount,
-  reviewedPercent,
-  totalCards,
-}: {
-  dueCount: number;
-  reviewedPercent: number;
-  totalCards: number;
-}) {
+export default function LandingHero() {
   const scopeRef = useRef<HTMLElement>(null);
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
 
@@ -42,8 +30,8 @@ export default function LandingHero({
       gsap
         .timeline({ defaults: { ease: "power4.out" } })
         .from(".editorial-nav", { autoAlpha: 0, y: -22, duration: 0.7 })
-        .from(".hero-eyebrow", { autoAlpha: 0, y: 16, duration: 0.45 }, "-=0.25")
         .from(".hero-word", { autoAlpha: 0, y: 70, rotate: -3, duration: 0.85 }, "-=0.15")
+        .from(".hero-highlight", { autoAlpha: 0, y: 34, rotate: 7, duration: 0.62 }, "-=0.5")
         .from(
           ".hero-script",
           { autoAlpha: 0, x: -55, rotate: -6, duration: 0.9 },
@@ -53,14 +41,26 @@ export default function LandingHero({
         .from(".hero-note", { autoAlpha: 0, y: 24, rotate: 8, stagger: 0.08, duration: 0.55 }, "-=0.55")
         .from(".hero-proof", { autoAlpha: 0, y: 14, stagger: 0.06, duration: 0.4 }, "-=0.25");
 
-      gsap.to(".hero-note-float", {
-        y: -8,
-        rotate: 1.5,
-        duration: 2.3,
-        ease: "sine.inOut",
-        repeat: -1,
-        yoyo: true,
-        stagger: 0.3,
+      gsap.utils.toArray<HTMLElement>(".hero-note-float").forEach((note, index) => {
+        const direction = index % 2 === 0 ? -1 : 1;
+        gsap.to(note, {
+          y: direction * (4 + index * 1.5),
+          rotation: `${direction > 0 ? "+=" : "-="}${1.2 + index * 0.45}`,
+          duration: 2.1 + index * 0.37,
+          delay: index * 0.18,
+          ease: "sine.inOut",
+          repeat: -1,
+          yoyo: true,
+        });
+      });
+
+      gsap.from(".box-debris-piece", {
+        autoAlpha: 0,
+        y: 34,
+        rotate: -10,
+        stagger: 0.07,
+        duration: 0.65,
+        ease: "back.out(1.8)",
       });
 
       gsap.from(".deck-reveal", {
@@ -118,17 +118,11 @@ export default function LandingHero({
       </header>
 
       <div className="editorial-canvas">
-        <p className="hero-eyebrow">
-          <Sparkles aria-hidden="true" />
-          A language studio for brave mouths
-        </p>
-
         <h1 className="editorial-title">
-          <span className="hero-word">Words</span>
-          <span className="hero-script">worth yapping</span>
+          <span className="hero-word">yap in</span>
+          <span className="hero-highlight">any</span>
+          <span className="hero-script">language</span>
         </h1>
-
-        <p className="hero-title-tail">about.</p>
 
         <div className="hero-mascot-shell">
           <AnimatedMascot
@@ -137,37 +131,41 @@ export default function LandingHero({
         </div>
 
         <div className="hero-note hero-note-float hero-note-listen">
-          <Headphones aria-hidden="true" />
-          <span>hear the tiny details</span>
+          <span className="hero-note-label">Español</span>
+          <strong>qué bonito</strong>
         </div>
 
         <div className="hero-note hero-note-float hero-note-level">
-          <span className="hero-note-label">today&apos;s glow-up</span>
-          <strong>{reviewedPercent}% fluent</strong>
+          <span className="hero-note-label">Français</span>
+          <strong>joie de vivre</strong>
         </div>
 
         <div className="hero-note hero-note-float hero-note-courage">
-          <span className="hero-note-label">tiny rule</span>
-          <strong>mistakes welcome</strong>
+          <span className="hero-note-label">Deutsch</span>
+          <strong>alles wird gut</strong>
         </div>
 
         <div className="hero-note hero-note-float hero-note-memory">
-          <span className="hero-note-label">memory magic</span>
-          <strong>right word, right time</strong>
+          <span className="hero-note-label">日本語</span>
+          <strong>ゆっくりでいい</strong>
         </div>
 
-        <div className="hero-proof-row">
-          <span className="hero-proof">
-            <strong>{dueCount}</strong> due today
-          </span>
-          <span className="hero-proof">
-            <strong>{totalCards}</strong> words in play
-          </span>
-          <span className="hero-proof">
-            <strong>CEFR</strong> fluency tracking
-          </span>
+        <div className="box-debris" aria-hidden="true">
+          <span className="box-debris-piece debris-word debris-hola">hola!</span>
+          <span className="box-debris-piece debris-word debris-ciao">ciao</span>
+          <span className="box-debris-piece debris-word debris-salut">salut</span>
+          <span className="box-debris-piece debris-letter debris-letter-one">a</span>
+          <span className="box-debris-piece debris-letter debris-letter-two">?</span>
+          <span className="box-debris-piece debris-spark debris-spark-one" />
+          <span className="box-debris-piece debris-spark debris-spark-two" />
+          <span className="box-debris-piece debris-dash debris-dash-one" />
+          <span className="box-debris-piece debris-dash debris-dash-two" />
         </div>
 
+        <div className="mini-duck-sticker box-debris-piece" aria-hidden="true" />
+        <div className="doodle-arrow" aria-hidden="true">
+          <span />
+        </div>
       </div>
     </section>
   );

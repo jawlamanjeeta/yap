@@ -65,7 +65,7 @@ export default async function DashboardPage() {
 
   return (
     <main className="landing-page">
-      <LandingHero dueCount={dueCount} reviewedPercent={reviewProgress} totalCards={totalCards} />
+      <LandingHero />
 
       <section id="how-it-works" className="story-section">
         <div className="story-heading deck-reveal">

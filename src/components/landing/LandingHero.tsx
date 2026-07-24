@@ -185,23 +185,12 @@ export default function LandingHero({
         <p className="hero-title-tail">about.</p>
 
         <div className="hero-mascot-shell">
-          <div className="hero-star" aria-hidden="true" />
-          <div className="hero-ribbon hero-ribbon-left" aria-hidden="true">
-            speak
-          </div>
-          <div className="hero-ribbon hero-ribbon-right" aria-hidden="true">
-            repeat
-          </div>
           <AnimatedMascot
             activeToken={activeToken}
             accent={activeTokenDetails.color}
             phrase={activeTokenDetails.line}
             reducedMotion={prefersReducedMotion}
           />
-          <div className="hero-pedestal" aria-hidden="true">
-            <span>say it messy</span>
-            <span>remember it beautifully</span>
-          </div>
         </div>
 
         <div className="hero-note hero-note-float hero-note-listen">

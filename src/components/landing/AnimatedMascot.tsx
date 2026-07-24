@@ -26,16 +26,16 @@ export default function AnimatedMascot({
       if (reducedMotion) return;
 
       gsap.to(".mascot-character", {
-        y: -10,
-        duration: 1.6,
+        y: -5,
+        duration: 2.2,
         ease: "sine.inOut",
         repeat: -1,
         yoyo: true,
       });
 
       gsap.to(".mascot-art", {
-        rotate: -1.5,
-        duration: 1.6,
+        rotate: -0.6,
+        duration: 2.2,
         ease: "sine.inOut",
         repeat: -1,
         yoyo: true,
@@ -76,9 +76,9 @@ export default function AnimatedMascot({
       .to(
         scope.querySelector(".mascot-art"),
         {
-          rotate: -8,
-          x: -5,
-          duration: 0.14,
+          rotate: -3,
+          x: -4,
+          duration: 0.16,
           repeat: 3,
           yoyo: true,
           ease: "power2.inOut",
@@ -113,10 +113,10 @@ export default function AnimatedMascot({
       >
         <span className="mascot-art">
           <Image
-            src="/yap-duck.png"
+            src="/yap-hero-mascot.png"
             alt=""
-            width={604}
-            height={711}
+            width={1393}
+            height={1034}
             priority
             draggable={false}
           />

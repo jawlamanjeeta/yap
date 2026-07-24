@@ -33,12 +33,12 @@ export default function HorizontalLanding({ children }: { children: ReactNode })
       destinationRef.current = gsap.utils.clamp(
         0,
         maximum,
-        destinationRef.current + movement * 1.35,
+        destinationRef.current + movement * 3.4,
       );
 
       gsap.to(scroller, {
         scrollLeft: destinationRef.current,
-        duration: 0.72,
+        duration: 0.48,
         ease: "power3.out",
         overwrite: "auto",
         onUpdate: updateProgress,

@@ -215,6 +215,11 @@ export default function LandingHero() {
           <strong>alles wird gut</strong>
         </div>
 
+        <div className="hero-note hero-note-float hero-note-english">
+          <span className="hero-note-label">English</span>
+          <strong>keep going</strong>
+        </div>
+
         <div className="hero-note hero-note-float hero-note-memory">
           <span className="hero-note-label">日本語</span>
           <strong>ゆっくりでいい</strong>
@@ -222,7 +227,7 @@ export default function LandingHero() {
 
         <div className="box-debris" aria-hidden="true">
           <span className="box-debris-piece debris-word debris-hola">hola!</span>
-          <span className="box-debris-piece debris-word debris-ciao">ciao</span>
+          <span className="box-debris-piece debris-word debris-ciao">hello</span>
           <span className="box-debris-piece debris-word debris-salut">salut</span>
           <span className="box-debris-piece debris-letter debris-letter-one">a</span>
           <span className="box-debris-piece debris-letter debris-letter-two">?</span>

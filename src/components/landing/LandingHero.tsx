@@ -111,10 +111,13 @@ export default function LandingHero() {
       );
 
       gsap.utils.toArray<HTMLElement>(".deck-reveal").forEach((element, index) => {
+        const horizontal = window.matchMedia("(min-width: 901px)").matches;
         gsap.from(element, {
           scrollTrigger: {
             trigger: element,
-            start: "top 88%",
+            scroller: horizontal ? ".horizontal-viewport" : undefined,
+            horizontal,
+            start: horizontal ? "left 88%" : "top 88%",
           },
           autoAlpha: 0,
           y: 42,

@@ -13,6 +13,7 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import { prisma } from "@/lib/prisma";
+import HorizontalLanding from "@/components/landing/HorizontalLanding";
 import LandingHero from "@/components/landing/LandingHero";
 
 export const dynamic = "force-dynamic";
@@ -65,9 +66,10 @@ export default async function DashboardPage() {
 
   return (
     <main className="landing-page">
-      <LandingHero />
+      <HorizontalLanding>
+        <LandingHero />
 
-      <section id="how-it-works" className="story-section">
+        <section id="how-it-works" className="story-section">
         <div className="story-heading deck-reveal">
           <p>Inside the yap studio / 01</p>
           <h2>
@@ -151,9 +153,9 @@ export default async function DashboardPage() {
             copy="Get gentle grammar and pronunciation notes in context."
           />
         </div>
-      </section>
+        </section>
 
-      <section id="decks" className="decks-section">
+        <section id="decks" className="decks-section">
         <div className="decks-heading deck-reveal">
           <p>Your word collection / 02</p>
           <h2>
@@ -215,7 +217,8 @@ export default async function DashboardPage() {
             </Link>
           </aside>
         </div>
-      </section>
+        </section>
+      </HorizontalLanding>
     </main>
   );
 }

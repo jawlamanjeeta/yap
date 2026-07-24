@@ -85,7 +85,7 @@ export default function AnimatedMascot({
       >
         <span className="mascot-art">
           <Image
-            src="/yap-hero-mascot.png"
+            src="/yap-hero-mascot-stickers.png"
             alt=""
             width={1393}
             height={1034}

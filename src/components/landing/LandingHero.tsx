@@ -25,21 +25,64 @@ export default function LandingHero() {
 
   useGSAP(
     () => {
-      if (prefersReducedMotion) return;
+      const entranceTargets = [
+        ".editorial-nav",
+        ".hero-word",
+        ".hero-highlight",
+        ".hero-script",
+        ".mascot-stage",
+        ".hero-note",
+        ".box-debris-piece",
+      ];
 
-      gsap
-        .timeline({ defaults: { ease: "power4.out" } })
-        .from(".editorial-nav", { autoAlpha: 0, y: -22, duration: 0.7 })
-        .from(".hero-word", { autoAlpha: 0, y: 70, rotate: -3, duration: 0.85 }, "-=0.15")
-        .from(".hero-highlight", { autoAlpha: 0, y: 34, rotate: 7, duration: 0.62 }, "-=0.5")
-        .from(
+      if (prefersReducedMotion) {
+        gsap.set(entranceTargets, { clearProps: "all" });
+        return;
+      }
+
+      const intro = gsap.timeline({ defaults: { ease: "power4.out" } });
+
+      intro
+        .fromTo(
+          ".editorial-nav",
+          { autoAlpha: 0, y: -22 },
+          { autoAlpha: 1, y: 0, duration: 0.7 },
+        )
+        .fromTo(
+          ".hero-word",
+          { autoAlpha: 0, y: 70, rotation: -3 },
+          { autoAlpha: 1, y: 0, rotation: 0, duration: 0.85 },
+          "-=0.15",
+        )
+        .fromTo(
+          ".hero-highlight",
+          { autoAlpha: 0, y: 34, rotation: 7 },
+          { autoAlpha: 1, y: 0, rotation: -2, duration: 0.62 },
+          "-=0.5",
+        )
+        .fromTo(
           ".hero-script",
-          { autoAlpha: 0, x: -55, rotate: -6, duration: 0.9 },
+          { autoAlpha: 0, x: -55, rotation: -6 },
+          { autoAlpha: 1, x: 0, rotation: -4, duration: 0.9 },
           "-=0.55",
         )
-        .from(".hero-mascot-shell", { autoAlpha: 0, y: 70, scale: 0.84, duration: 0.9 }, "-=0.72")
-        .from(".hero-note", { autoAlpha: 0, y: 24, rotate: 8, stagger: 0.08, duration: 0.55 }, "-=0.55")
-        .from(".hero-proof", { autoAlpha: 0, y: 14, stagger: 0.06, duration: 0.4 }, "-=0.25");
+        .fromTo(
+          ".mascot-stage",
+          { autoAlpha: 0 },
+          { autoAlpha: 1, duration: 0.8 },
+          "-=0.65",
+        )
+        .fromTo(
+          ".hero-note",
+          { autoAlpha: 0, y: 24 },
+          {
+            autoAlpha: 1,
+            y: 0,
+            stagger: 0.08,
+            duration: 0.55,
+          },
+          "-=0.55",
+        );
 
       gsap.utils.toArray<HTMLElement>(".hero-note-float").forEach((note, index) => {
         const direction = index % 2 === 0 ? -1 : 1;
@@ -54,28 +97,50 @@ export default function LandingHero() {
         });
       });
 
-      gsap.from(".box-debris-piece", {
-        autoAlpha: 0,
-        y: 34,
-        rotate: -10,
-        stagger: 0.07,
-        duration: 0.65,
-        ease: "back.out(1.8)",
+      intro.fromTo(
+        ".box-debris-piece",
+        { autoAlpha: 0, y: 34 },
+        {
+          autoAlpha: 1,
+          y: 0,
+          stagger: 0.07,
+          duration: 0.65,
+          ease: "back.out(1.8)",
+        },
+        "-=0.45",
+      );
+
+      gsap.utils.toArray<HTMLElement>(".deck-reveal").forEach((element, index) => {
+        gsap.from(element, {
+          scrollTrigger: {
+            trigger: element,
+            start: "top 88%",
+          },
+          autoAlpha: 0,
+          y: 42,
+          rotate: index % 2 === 0 ? -0.8 : 0.8,
+          duration: 0.82,
+          ease: "power3.out",
+        });
       });
 
-      gsap.from(".deck-reveal", {
-        scrollTrigger: {
-          trigger: "#decks",
-          start: "top 84%",
+      gsap.to(".practice-wave i", {
+        scaleY: () => gsap.utils.random(0.45, 1.15),
+        transformOrigin: "center",
+        duration: 0.48,
+        stagger: {
+          each: 0.055,
+          from: "center",
         },
-        autoAlpha: 0,
-        y: 34,
-        stagger: 0.08,
-        duration: 0.72,
-        ease: "power3.out",
+        ease: "sine.inOut",
+        repeat: -1,
+        yoyo: true,
       });
     },
-    { scope: scopeRef, dependencies: [prefersReducedMotion] },
+    {
+      dependencies: [prefersReducedMotion],
+      revertOnUpdate: true,
+    },
   );
 
   function handlePointerMove(event: React.PointerEvent<HTMLElement>) {
@@ -162,7 +227,6 @@ export default function LandingHero() {
           <span className="box-debris-piece debris-dash debris-dash-two" />
         </div>
 
-        <div className="mini-duck-sticker box-debris-piece" aria-hidden="true" />
         <div className="doodle-arrow" aria-hidden="true">
           <span />
         </div>

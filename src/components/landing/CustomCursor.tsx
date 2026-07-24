@@ -54,9 +54,5 @@ export default function CustomCursor() {
     };
   }, []);
 
-  return (
-    <div ref={cursorRef} className="custom-cursor" aria-hidden="true">
-      <span>yap</span>
-    </div>
-  );
+  return <div ref={cursorRef} className="custom-cursor" aria-hidden="true" />;
 }

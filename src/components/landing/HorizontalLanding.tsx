@@ -24,14 +24,16 @@ export default function HorizontalLanding({ children }: { children: ReactNode })
     };
 
     const handleWheel = (event: WheelEvent) => {
-      if (!desktop.matches || Math.abs(event.deltaY) <= Math.abs(event.deltaX)) return;
+      if (!desktop.matches) return;
 
       event.preventDefault();
+      const movement =
+        Math.abs(event.deltaY) >= Math.abs(event.deltaX) ? event.deltaY : event.deltaX;
       const maximum = scroller.scrollWidth - scroller.clientWidth;
       destinationRef.current = gsap.utils.clamp(
         0,
         maximum,
-        destinationRef.current + event.deltaY * 1.35,
+        destinationRef.current + movement * 1.35,
       );
 
       gsap.to(scroller, {
@@ -66,13 +68,13 @@ export default function HorizontalLanding({ children }: { children: ReactNode })
     };
 
     scroller.addEventListener("scroll", updateProgress, { passive: true });
-    scroller.addEventListener("wheel", handleWheel, { passive: false });
+    window.addEventListener("wheel", handleWheel, { passive: false, capture: true });
     window.addEventListener("keydown", handleKeyDown);
     updateProgress();
 
     return () => {
       scroller.removeEventListener("scroll", updateProgress);
-      scroller.removeEventListener("wheel", handleWheel);
+      window.removeEventListener("wheel", handleWheel, { capture: true });
       window.removeEventListener("keydown", handleKeyDown);
       gsap.killTweensOf(scroller);
     };

@@ -1619,44 +1619,25 @@ h3,
   left: 0;
   z-index: 1000;
   display: none;
-  width: 3.15rem;
-  height: 3.15rem;
-  align-items: center;
-  justify-content: center;
-  border: 1px solid var(--ink);
-  border-radius: 50%;
-  color: var(--paper-bright);
+  width: 1rem;
+  height: 1rem;
   background: var(--pink);
-  box-shadow: 0.24rem 0.28rem 0 var(--ink);
-  font-family: var(--font-display);
-  font-size: 0.75rem;
-  font-weight: 700;
+  clip-path: polygon(50% 0, 61% 38%, 100% 50%, 61% 62%, 50% 100%, 39% 62%, 0 50%, 39% 38%);
+  filter:
+    drop-shadow(0 0 0.18rem rgba(230, 61, 112, 0.95))
+    drop-shadow(0 0 0.5rem rgba(230, 61, 112, 0.75));
   opacity: 0;
   pointer-events: none;
   transform: translate(-50%, -50%);
   transition:
     width 180ms ease,
     height 180ms ease,
-    color 180ms ease,
     background 180ms ease,
     opacity 150ms ease;
 }
 
-.custom-cursor::after {
-  position: absolute;
-  right: -0.14rem;
-  bottom: 0.15rem;
-  width: 0.65rem;
-  height: 0.65rem;
-  border-right: 1px solid var(--ink);
-  border-bottom: 1px solid var(--ink);
-  background: inherit;
-  content: "";
-  rotate: 22deg;
-}
-
 .custom-cursor.is-enabled {
-  display: flex;
+  display: block;
 }
 
 .custom-cursor.is-visible {
@@ -1664,15 +1645,17 @@ h3,
 }
 
 .custom-cursor.is-interactive {
-  width: 4.35rem;
-  height: 4.35rem;
-  color: var(--ink);
+  width: 1.35rem;
+  height: 1.35rem;
   background: var(--yellow);
+  filter:
+    drop-shadow(0 0 0.2rem rgba(247, 229, 138, 1))
+    drop-shadow(0 0 0.6rem rgba(247, 229, 138, 0.9));
 }
 
 .custom-cursor.is-pressed {
-  width: 2.7rem;
-  height: 2.7rem;
+  width: 0.72rem;
+  height: 0.72rem;
 }
 
 body.has-custom-cursor,
@@ -1706,7 +1689,6 @@ body.has-custom-cursor textarea {
     overflow-y: hidden;
     overscroll-behavior: contain;
     scrollbar-width: none;
-    scroll-snap-type: x proximity;
   }
 
   .horizontal-viewport::-webkit-scrollbar {
@@ -1726,8 +1708,6 @@ body.has-custom-cursor textarea {
     height: 100svh;
     min-height: 100svh;
     flex: 0 0 100vw;
-    scroll-snap-align: start;
-    scroll-snap-stop: always;
   }
 
   .horizontal-track > .editorial-hero {

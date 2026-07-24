@@ -3,12 +3,9 @@
 import Link from "next/link";
 import { type CSSProperties, useEffect, useRef, useState } from "react";
 import {
-  ArrowDown,
-  ArrowUpRight,
   Headphones,
   Mic,
   Sparkles,
-  Volume2,
 } from "lucide-react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -16,44 +13,6 @@ import { useGSAP } from "@gsap/react";
 import AnimatedMascot from "./AnimatedMascot";
 
 gsap.registerPlugin(useGSAP, ScrollTrigger);
-
-const landingTokens = [
-  {
-    label: "hola",
-    language: "Spanish",
-    line: "Open vowels. Easy rhythm.",
-    color: "#f03867",
-  },
-  {
-    label: "merci",
-    language: "French",
-    line: "Soft ending. Say it lightly.",
-    color: "#18734f",
-  },
-  {
-    label: "lernen",
-    language: "German",
-    line: "Recall it. Then use it.",
-    color: "#e75b37",
-  },
-  {
-    label: "hanasu",
-    language: "Japanese",
-    line: "Keep the rhythm moving.",
-    color: "#7857c5",
-  },
-];
-
-const tickerItems = [
-  "SPEAK",
-  "LISTEN",
-  "REMEMBER",
-  "REPEAT",
-  "WHISPER",
-  "GPT-4o",
-  "SM-2",
-  "CEFR",
-];
 
 export default function LandingHero({
   dueCount,
@@ -65,10 +24,7 @@ export default function LandingHero({
   totalCards: number;
 }) {
   const scopeRef = useRef<HTMLElement>(null);
-  const [activeToken, setActiveToken] = useState("hola");
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
-  const activeTokenDetails =
-    landingTokens.find((token) => token.label === activeToken) ?? landingTokens[0];
 
   useEffect(() => {
     const media = window.matchMedia("(prefers-reduced-motion: reduce)");
@@ -95,8 +51,6 @@ export default function LandingHero({
         )
         .from(".hero-mascot-shell", { autoAlpha: 0, y: 70, scale: 0.84, duration: 0.9 }, "-=0.72")
         .from(".hero-note", { autoAlpha: 0, y: 24, rotate: 8, stagger: 0.08, duration: 0.55 }, "-=0.55")
-        .from(".hero-copy", { autoAlpha: 0, y: 18, duration: 0.5 }, "-=0.35")
-        .from(".hero-cta", { autoAlpha: 0, y: 14, stagger: 0.08, duration: 0.45 }, "-=0.28")
         .from(".hero-proof", { autoAlpha: 0, y: 14, stagger: 0.06, duration: 0.4 }, "-=0.25");
 
       gsap.to(".hero-note-float", {
@@ -107,13 +61,6 @@ export default function LandingHero({
         repeat: -1,
         yoyo: true,
         stagger: 0.3,
-      });
-
-      gsap.to(".ticker-track", {
-        xPercent: -50,
-        duration: 22,
-        ease: "none",
-        repeat: -1,
       });
 
       gsap.from(".deck-reveal", {
@@ -151,7 +98,6 @@ export default function LandingHero({
         {
           "--parallax-x": "0px",
           "--parallax-y": "0px",
-          "--token-color": activeTokenDetails.color,
         } as CSSProperties
       }
     >
@@ -186,9 +132,6 @@ export default function LandingHero({
 
         <div className="hero-mascot-shell">
           <AnimatedMascot
-            activeToken={activeToken}
-            accent={activeTokenDetails.color}
-            phrase={activeTokenDetails.line}
             reducedMotion={prefersReducedMotion}
           />
         </div>
@@ -203,45 +146,14 @@ export default function LandingHero({
           <strong>{reviewedPercent}% fluent</strong>
         </div>
 
-        <div className="hero-note hero-note-speak">
-          <Volume2 aria-hidden="true" />
-          <span>real-time pronunciation</span>
-          <strong>91%</strong>
+        <div className="hero-note hero-note-float hero-note-courage">
+          <span className="hero-note-label">tiny rule</span>
+          <strong>mistakes welcome</strong>
         </div>
 
-        <div className="hero-copy">
-          <p>
-            Flashcards that know when to return. AI conversations that correct without killing
-            your confidence.
-          </p>
-          <div className="hero-actions">
-            <Link href="/chat" className="hero-cta hero-cta-primary">
-              <Mic aria-hidden="true" />
-              Speak your first sentence
-            </Link>
-            <Link href="#decks" className="hero-cta hero-cta-secondary">
-              See your decks
-              <ArrowDown aria-hidden="true" />
-            </Link>
-          </div>
-        </div>
-
-        <div className="hero-language-strip" aria-label="Choose a practice language">
-          {landingTokens.map((token, index) => (
-            <button
-              key={token.label}
-              type="button"
-              data-testid={`landing-token-${token.label}`}
-              aria-pressed={activeToken === token.label}
-              onClick={() => setActiveToken(token.label)}
-              onFocus={() => setActiveToken(token.label)}
-              className={activeToken === token.label ? "is-active" : ""}
-              style={{ "--sticker-rotate": `${index % 2 === 0 ? -2 : 2}deg` } as CSSProperties}
-            >
-              <span>{token.language}</span>
-              <strong>{token.label}</strong>
-            </button>
-          ))}
+        <div className="hero-note hero-note-float hero-note-memory">
+          <span className="hero-note-label">memory magic</span>
+          <strong>right word, right time</strong>
         </div>
 
         <div className="hero-proof-row">
@@ -256,20 +168,6 @@ export default function LandingHero({
           </span>
         </div>
 
-        <Link href="#how-it-works" className="hero-scroll-cue" aria-label="See how yap works">
-          <ArrowUpRight aria-hidden="true" />
-        </Link>
-      </div>
-
-      <div className="editorial-ticker" aria-hidden="true">
-        <div className="ticker-track">
-          {[...tickerItems, ...tickerItems, ...tickerItems, ...tickerItems].map((item, index) => (
-            <span key={`${item}-${index}`}>
-              {item}
-              <i />
-            </span>
-          ))}
-        </div>
       </div>
     </section>
   );

@@ -231,7 +231,7 @@ h3,
   position: absolute;
   top: 4%;
   left: 50%;
-  z-index: 2;
+  z-index: 8;
   width: 100%;
   margin: 0;
   text-align: center;
@@ -276,7 +276,7 @@ h3,
 
 .hero-mascot-shell {
   position: absolute;
-  bottom: -4.8rem;
+  bottom: -5.8rem;
   left: 50%;
   z-index: 6;
   width: 51rem;
@@ -358,155 +358,37 @@ h3,
   line-height: 1;
 }
 
-.hero-note-speak {
-  right: 4%;
-  bottom: 21%;
+.hero-note-courage,
+.hero-note-memory {
   display: grid;
-  width: 12.5rem;
-  grid-template-columns: auto 1fr;
-  align-items: center;
-  gap: 0.25rem 0.65rem;
-  padding: 0.9rem;
+  gap: 0.35rem;
+  width: 11rem;
+  padding: 1rem;
+}
+
+.hero-note-courage strong,
+.hero-note-memory strong {
+  font-family: var(--font-display);
+  font-size: 1.35rem;
+  font-weight: 700;
+  line-height: 1.05;
+}
+
+.hero-note-courage {
+  position: absolute;
+  top: 51%;
+  left: 3%;
   color: var(--paper-bright);
   background: var(--green);
-  rotate: -3deg;
+  rotate: 3deg;
 }
 
-.hero-note-speak svg {
-  width: 1.3rem;
-  height: 1.3rem;
-  grid-row: 1 / 3;
-}
-
-.hero-note-speak span {
-  font-size: 0.58rem;
-  font-weight: 900;
-  text-transform: uppercase;
-}
-
-.hero-note-speak strong {
-  font-family: var(--font-display);
-  font-size: 1.55rem;
-  line-height: 1;
-}
-
-.hero-copy {
+.hero-note-memory {
   position: absolute;
-  bottom: 12%;
-  left: 0;
-  z-index: 14;
-  width: 19rem;
-}
-
-.hero-copy > p {
-  margin: 0;
-  font-family: var(--font-display);
-  font-size: 1.15rem;
-  font-weight: 700;
-  line-height: 1.35;
-}
-
-.hero-actions {
-  display: grid;
-  gap: 0.55rem;
-  margin-top: 1.15rem;
-}
-
-.hero-cta {
-  display: flex;
-  min-height: 2.9rem;
-  align-items: center;
-  justify-content: center;
-  gap: 0.55rem;
-  border-radius: 3px;
-  padding: 0.7rem 1rem;
-  font-size: 0.72rem;
-  font-weight: 900;
-  text-decoration: none;
-  text-transform: uppercase;
-  transition:
-    box-shadow 180ms ease,
-    transform 180ms ease,
-    background 180ms ease;
-}
-
-.hero-cta svg {
-  width: 1rem;
-  height: 1rem;
-}
-
-.hero-cta:hover,
-.hero-cta:focus-visible {
-  transform: translate(-2px, -2px);
-}
-
-.hero-cta-primary {
-  border: 1px solid var(--ink);
-  color: var(--paper-bright);
-  background: var(--pink);
-  box-shadow: 0.32rem 0.34rem 0 var(--ink);
-}
-
-.hero-cta-primary:hover,
-.hero-cta-primary:focus-visible {
-  background: var(--coral);
-  box-shadow: 0.5rem 0.5rem 0 var(--ink);
-}
-
-.hero-cta-secondary {
-  border: 1px solid var(--ink);
-  color: var(--ink);
-  background: rgba(255, 253, 247, 0.78);
-}
-
-.hero-language-strip {
-  position: absolute;
-  right: 0;
-  bottom: 7%;
-  z-index: 14;
-  display: grid;
-  width: 11rem;
-  gap: 0.45rem;
-}
-
-.hero-language-strip button {
-  display: flex;
-  min-height: 2.45rem;
-  align-items: center;
-  justify-content: space-between;
-  border: 1px solid rgba(37, 37, 35, 0.5);
-  border-radius: 2px;
-  padding: 0.45rem 0.7rem;
-  color: var(--ink);
-  background: var(--paper-bright);
-  box-shadow: 0.24rem 0.24rem 0 rgba(37, 37, 35, 0.1);
-  cursor: pointer;
-  rotate: var(--sticker-rotate);
-  transition:
-    color 160ms ease,
-    background 160ms ease,
-    transform 160ms ease;
-}
-
-.hero-language-strip button:hover,
-.hero-language-strip button:focus-visible {
-  transform: translateX(-4px);
-}
-
-.hero-language-strip button.is-active {
-  color: var(--paper-bright);
-  background: var(--token-color);
-}
-
-.hero-language-strip span {
-  font-size: 0.55rem;
-  font-weight: 900;
-  text-transform: uppercase;
-}
-
-.hero-language-strip strong {
-  font-family: var(--font-display);
-  font-size: 1rem;
+  top: 43%;
+  right: 3%;
+  background: var(--lavender);
+  rotate: -4deg;
 }
 
 .hero-proof-row {
@@ -538,72 +420,6 @@ h3,
   margin-right: 1.1rem;
   color: var(--pink);
   content: "✦";
-}
-
-.hero-scroll-cue {
-  position: absolute;
-  right: 0;
-  bottom: 2.3%;
-  z-index: 16;
-  display: grid;
-  width: 3rem;
-  height: 3rem;
-  place-items: center;
-  border: 1px solid var(--ink);
-  border-radius: 50%;
-  color: var(--ink);
-  background: var(--paper-bright);
-  transition:
-    color 180ms ease,
-    background 180ms ease,
-    rotate 180ms ease;
-}
-
-.hero-scroll-cue:hover,
-.hero-scroll-cue:focus-visible {
-  color: var(--paper-bright);
-  background: var(--pink);
-  rotate: 45deg;
-}
-
-.hero-scroll-cue svg {
-  width: 1.2rem;
-  height: 1.2rem;
-}
-
-.editorial-ticker {
-  position: absolute;
-  right: 0;
-  bottom: 0;
-  left: 0;
-  z-index: 25;
-  overflow: hidden;
-  border-top: 1px solid var(--ink);
-  border-bottom: 1px solid var(--ink);
-  background: var(--yellow);
-}
-
-.ticker-track {
-  display: flex;
-  width: max-content;
-  padding: 0.45rem 0;
-}
-
-.ticker-track span {
-  display: flex;
-  align-items: center;
-  gap: 1.4rem;
-  padding-left: 1.4rem;
-  font-size: 0.62rem;
-  font-weight: 900;
-  text-transform: uppercase;
-}
-
-.ticker-track i {
-  width: 0.42rem;
-  height: 0.42rem;
-  background: var(--pink);
-  rotate: 45deg;
 }
 
 .mascot-stage {
@@ -663,47 +479,6 @@ h3,
   background: rgba(37, 37, 35, 0.18);
   filter: blur(6px);
   transform: translateX(-50%);
-}
-
-.mascot-speech {
-  position: absolute;
-  top: 13%;
-  right: 2.2rem;
-  z-index: 9;
-  display: grid;
-  width: 10.8rem;
-  gap: 0.25rem;
-  border: 1px solid var(--ink);
-  border-radius: 3px;
-  padding: 0.75rem 0.85rem;
-  color: var(--ink);
-  background: var(--yellow);
-  box-shadow: 0.4rem 0.45rem 0 rgba(37, 37, 35, 0.12);
-  font-family: var(--font-display);
-  font-size: 0.78rem;
-  line-height: 1.15;
-  rotate: 3deg;
-}
-
-.mascot-speech::after {
-  position: absolute;
-  bottom: -0.55rem;
-  left: 1.2rem;
-  width: 0.9rem;
-  height: 0.9rem;
-  border-right: 1px solid var(--ink);
-  border-bottom: 1px solid var(--ink);
-  background: var(--paper-bright);
-  content: "";
-  rotate: 45deg;
-}
-
-.mascot-speech-token {
-  color: var(--mascot-accent);
-  font-family: var(--font-script);
-  font-size: 1.7rem;
-  font-weight: 700;
-  line-height: 0.8;
 }
 
 .mascot-spark {
@@ -1334,20 +1109,12 @@ h3,
     height: 33rem;
   }
 
-  .hero-copy {
-    width: 17rem;
-  }
-
   .hero-note-listen {
     left: 1%;
   }
 
   .hero-note-level {
     right: 2%;
-  }
-
-  .hero-note-speak {
-    right: 1%;
   }
 
   .practice-copy {
@@ -1381,20 +1148,18 @@ h3,
     display: none;
   }
 
-  .hero-copy {
-    bottom: 10%;
-  }
-
-  .hero-language-strip {
-    bottom: 9%;
-  }
-
   .hero-proof-row {
     display: none;
   }
 
-  .hero-scroll-cue {
-    display: none;
+  .hero-note-courage {
+    top: 48%;
+    left: 2%;
+  }
+
+  .hero-note-memory {
+    top: 41%;
+    right: 2%;
   }
 
   .story-heading,
@@ -1510,7 +1275,7 @@ h3,
   }
 
   .hero-mascot-shell {
-    bottom: 11rem;
+    bottom: 1.6rem;
     width: 22.5rem;
     height: 17.2rem;
   }
@@ -1520,75 +1285,31 @@ h3,
     width: 100%;
   }
 
-  .mascot-speech {
-    top: 22%;
-    right: -0.25rem;
-    width: 7.6rem;
-    padding: 0.55rem;
-    font-size: 0.62rem;
-  }
-
-  .mascot-speech-token {
-    font-size: 1.25rem;
-  }
-
   .mascot-shadow {
     bottom: -0.1rem;
     width: 15rem;
     height: 1.2rem;
   }
 
-  .hero-note-speak {
-    display: none;
+  .hero-note-courage,
+  .hero-note-memory {
+    width: 8.1rem;
+    padding: 0.72rem;
   }
 
-  .hero-copy {
-    right: 0;
-    bottom: 4.4rem;
-    left: 0;
-    width: auto;
+  .hero-note-courage {
+    top: 44%;
+    left: -0.25rem;
   }
 
-  .hero-copy > p {
-    display: none;
+  .hero-note-memory {
+    top: 38%;
+    right: -0.25rem;
   }
 
-  .hero-actions {
-    display: grid;
-    grid-template-columns: 1fr 0.76fr;
-    gap: 0.45rem;
-    margin-top: 0;
-  }
-
-  .hero-cta {
-    min-height: 2.55rem;
-    padding: 0.55rem 0.65rem;
-    font-size: 0.54rem;
-  }
-
-  .hero-language-strip {
-    right: auto;
-    bottom: 0.7rem;
-    left: 0;
-    display: flex;
-    width: 100%;
-    gap: 0.3rem;
-  }
-
-  .hero-language-strip button {
-    min-width: 0;
-    min-height: 2.1rem;
-    flex: 1;
-    justify-content: center;
-    padding: 0.4rem 0.3rem;
-  }
-
-  .hero-language-strip span {
-    display: none;
-  }
-
-  .hero-language-strip strong {
-    font-size: 0.8rem;
+  .hero-note-courage strong,
+  .hero-note-memory strong {
+    font-size: 1rem;
   }
 
   .story-section,

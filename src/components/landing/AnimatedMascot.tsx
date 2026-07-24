@@ -1,21 +1,15 @@
 "use client";
 
 import Image from "next/image";
-import { type CSSProperties, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 
 gsap.registerPlugin(useGSAP);
 
 export default function AnimatedMascot({
-  activeToken,
-  accent,
-  phrase,
   reducedMotion,
 }: {
-  activeToken: string;
-  accent: string;
-  phrase: string;
   reducedMotion: boolean;
 }) {
   const scopeRef = useRef<HTMLDivElement>(null);
@@ -42,13 +36,6 @@ export default function AnimatedMascot({
         transformOrigin: "50% 85%",
       });
 
-      gsap.to(".mascot-speech", {
-        y: -7,
-        duration: 1.45,
-        ease: "sine.inOut",
-        repeat: -1,
-        yoyo: true,
-      });
     },
     { scope: scopeRef, dependencies: [reducedMotion] },
   );
@@ -85,26 +72,11 @@ export default function AnimatedMascot({
           transformOrigin: "50% 85%",
         },
         0,
-      )
-      .fromTo(
-        scope.querySelector(".mascot-speech"),
-        { scale: 0.92, autoAlpha: 0.72 },
-        { scale: 1, autoAlpha: 1, duration: 0.24, ease: "back.out(2)" },
-        0,
       );
-  }, [activeToken, waveCount, reducedMotion]);
+  }, [waveCount, reducedMotion]);
 
   return (
-    <div
-      ref={scopeRef}
-      className="mascot-stage"
-      style={{ "--mascot-accent": accent } as CSSProperties}
-    >
-      <div className="mascot-speech" aria-live="polite">
-        <span className="mascot-speech-token">{activeToken}</span>
-        <span>{phrase}</span>
-      </div>
-
+    <div ref={scopeRef} className="mascot-stage">
       <button
         type="button"
         className="mascot-character"

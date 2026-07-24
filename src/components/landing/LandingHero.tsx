@@ -185,8 +185,10 @@ export default function LandingHero() {
       <div className="editorial-canvas">
         <h1 className="editorial-title">
           <span className="hero-word">yap in</span>
-          <span className="hero-highlight">any</span>
-          <span className="hero-script">language</span>
+          <span className="hero-phrase">
+            <span className="hero-highlight">any</span>
+            <span className="hero-script">language</span>
+          </span>
         </h1>
 
         <div className="hero-mascot-shell">

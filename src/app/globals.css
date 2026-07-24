@@ -221,16 +221,22 @@ h3,
   display: block;
   color: var(--ink);
   font-family: var(--font-display);
-  font-size: 8.4rem;
+  font-size: 7.8rem;
   font-weight: 700;
   line-height: 0.82;
   text-transform: lowercase;
 }
 
+.hero-phrase {
+  display: flex;
+  gap: 0.85rem;
+  align-items: center;
+  justify-content: center;
+  margin-top: 0.65rem;
+}
+
 .hero-highlight {
-  position: absolute;
-  top: 6rem;
-  left: 41%;
+  position: relative;
   z-index: 10;
   display: inline-block;
   border: 1px solid rgba(123, 23, 58, 0.35);
@@ -248,15 +254,14 @@ h3,
 .hero-script {
   position: relative;
   z-index: 5;
-  display: block;
-  margin-top: -0.7rem;
-  margin-left: 6rem;
+  display: inline-block;
+  margin: 0;
   color: var(--pink);
   font-family: var(--font-script);
-  font-size: 5.9rem;
+  font-size: 5.4rem;
   font-weight: 600;
-  line-height: 0.8;
-  rotate: -4deg;
+  line-height: 0.9;
+  rotate: -2deg;
 }
 
 .hero-mascot-shell {
@@ -1200,19 +1205,15 @@ h3,
 
 @media (max-width: 1180px) {
   .hero-word {
-    font-size: 8.1rem;
+    font-size: 7.2rem;
   }
 
   .hero-highlight {
-    top: 5.9rem;
-    left: 40%;
     font-size: 2.7rem;
   }
 
   .hero-script {
-    margin-top: -0.8rem;
-    margin-left: 5rem;
-    font-size: 5.3rem;
+    font-size: 4.8rem;
   }
 
   .hero-mascot-shell {
@@ -1251,16 +1252,13 @@ h3,
   }
 
   .hero-highlight {
-    top: 4.7rem;
-    left: 38%;
     padding-right: 1.1rem;
     padding-left: 1.1rem;
     font-size: 2.15rem;
   }
 
   .hero-script {
-    margin-left: 4rem;
-    font-size: 4.5rem;
+    font-size: 4rem;
   }
 
   .hero-mascot-shell {
@@ -1383,21 +1381,22 @@ h3,
   }
 
   .hero-word {
-    font-size: 4.45rem;
+    font-size: 4rem;
   }
 
   .hero-highlight {
-    top: 3.25rem;
-    left: 34%;
     padding: 0.05rem 0.7rem 0.12rem;
     font-size: 1.55rem;
   }
 
+  .hero-phrase {
+    gap: 0.45rem;
+    margin-top: 0.35rem;
+  }
+
   .hero-script {
-    margin-top: -0.05rem;
-    margin-left: 2.7rem;
-    font-size: 3.25rem;
-    line-height: 0.72;
+    font-size: 2.8rem;
+    line-height: 0.9;
   }
 
   .hero-mascot-shell {
@@ -1408,7 +1407,7 @@ h3,
   }
 
   .mascot-character {
-    top: 50%;
+    top: 0;
     width: 100%;
   }
 

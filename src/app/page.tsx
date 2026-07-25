@@ -155,6 +155,17 @@ export default async function DashboardPage() {
         </section>
 
         <section id="decks" className="decks-section">
+        <div className="decks-backdrop" aria-hidden="true">
+          <span className="decks-backdrop-word decks-backdrop-hello">hello</span>
+          <span className="decks-backdrop-word decks-backdrop-bonjour">bonjour</span>
+          <span className="decks-backdrop-word decks-backdrop-hola">hola</span>
+          <span className="decks-backdrop-word decks-backdrop-hallo">hallo</span>
+          <span className="decks-backdrop-word decks-backdrop-konnichiwa">こんにちは</span>
+          <i className="decks-paper-scrap decks-paper-scrap-one" />
+          <i className="decks-paper-scrap decks-paper-scrap-two" />
+          <i className="decks-backdrop-spark decks-backdrop-spark-one">✦</i>
+          <i className="decks-backdrop-spark decks-backdrop-spark-two">✦</i>
+        </div>
         <div className="decks-heading deck-reveal">
           <p>Your word collection / 02</p>
           <h2>

@@ -6,7 +6,13 @@ import { QueuedCard, useSessionStore } from "@/store/useSessionStore";
 import Flashcard from "./Flashcard";
 import GradingControls from "./GradingControls";
 
-export default function FlashcardDeck({ initialQueue }: { initialQueue: QueuedCard[] }) {
+export default function FlashcardDeck({
+  initialQueue,
+  language,
+}: {
+  initialQueue: QueuedCard[];
+  language: string;
+}) {
   const { setQueue, sessionXp, currentIndex } = useSessionStore();
   const [isMounted, setIsMounted] = useState(false);
 
@@ -21,20 +27,20 @@ export default function FlashcardDeck({ initialQueue }: { initialQueue: QueuedCa
   const progress = totalCards === 0 ? 100 : Math.min(100, (currentIndex / totalCards) * 100);
 
   return (
-    <div className="flex w-full max-w-md flex-col items-center">
-      <div className="mb-6 flex w-full flex-col gap-3 rounded-lg border border-neutral-200 bg-white p-4 shadow-sm dark:border-neutral-800 dark:bg-neutral-900">
-        <div className="flex items-center justify-between text-sm font-bold uppercase tracking-[0.12em] text-neutral-500 dark:text-neutral-400">
+    <div className="study-deck">
+      <div className="study-progress">
+        <div className="study-progress-copy">
           <span>
-            XP <span className="ml-1 text-neutral-950 dark:text-white">{sessionXp}</span>
+            Session XP <strong>{sessionXp}</strong>
           </span>
           <span>
-            {Math.min(currentIndex, totalCards)} / {totalCards}
+            {Math.min(currentIndex, totalCards)} of {totalCards}
           </span>
         </div>
 
-        <div className="h-2 w-full overflow-hidden rounded-full bg-neutral-100 dark:bg-neutral-800">
+        <div className="study-progress-track">
           <motion.div
-            className="h-full bg-amber-500"
+            className="study-progress-fill"
             initial={{ width: 0 }}
             animate={{ width: `${progress}%` }}
             transition={{ duration: 0.5, ease: "easeInOut" }}
@@ -42,7 +48,7 @@ export default function FlashcardDeck({ initialQueue }: { initialQueue: QueuedCa
         </div>
       </div>
 
-      <Flashcard />
+      <Flashcard language={language} />
       <GradingControls />
     </div>
   );

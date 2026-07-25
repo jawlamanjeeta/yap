@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, BookOpen, Sparkles } from "lucide-react";
 import { prisma } from "@/lib/prisma";
 import { requireUser } from "@/lib/auth-user";
 import FlashcardDeck from "@/components/flashcards/FlashcardDeck";
@@ -30,6 +30,15 @@ export default async function StudyPage({
     notFound();
   }
 
+  const languageNames: Record<string, string> = {
+    de: "German",
+    en: "English",
+    es: "Spanish",
+    fr: "French",
+    ja: "Japanese",
+  };
+  const languageName = languageNames[deck.language] ?? deck.language.toUpperCase();
+
   const dueCards = await prisma.userCard.findMany({
     where: {
       userId: user.id,
@@ -58,40 +67,54 @@ export default async function StudyPage({
   }));
 
   return (
-    <main className="min-h-screen bg-[#f7f4ef] p-4 text-neutral-950 dark:bg-neutral-950 dark:text-white sm:p-6">
-      <div className="mx-auto flex w-full max-w-3xl flex-col gap-6">
-        <div className="flex items-center justify-between">
+    <main className="study-page" data-language={deck.language}>
+      <div className="study-background-word" aria-hidden="true">
+        {languageName}
+      </div>
+      <div className="study-doodle study-doodle-left" aria-hidden="true">
+        <Sparkles />
+      </div>
+      <div className="study-doodle study-doodle-right" aria-hidden="true">
+        say it!
+      </div>
+
+      <div className="study-shell">
+        <nav className="study-nav" aria-label="Study navigation">
           <Link
             href="/"
-            className="inline-flex w-fit items-center gap-2 rounded-lg border border-neutral-300 bg-white px-3 py-2 text-sm font-semibold transition hover:bg-neutral-100 dark:border-neutral-800 dark:bg-neutral-900 dark:hover:bg-neutral-800"
+            className="study-back"
           >
-            <ArrowLeft className="h-4 w-4" />
-            Dashboard
+            <ArrowLeft aria-hidden="true" />
+            Word collection
           </Link>
           <LogoutButton compact />
-        </div>
+        </nav>
 
-        <header className="rounded-lg border border-neutral-200 bg-white p-5 shadow-sm dark:border-neutral-800 dark:bg-neutral-900">
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+        <header className="study-header">
+          <div className="study-tape" aria-hidden="true" />
+          <div className="study-header-main">
             <div>
-              <p className="text-xs font-bold uppercase tracking-[0.12em] text-amber-600 dark:text-amber-300">
-                SM-2 review session
+              <p className="study-kicker">
+                <BookOpen aria-hidden="true" />
+                {languageName} starter deck
               </p>
-              <h1 className="mt-2 text-3xl font-black tracking-tight">{deck.title}</h1>
+              <h1>{deck.title}</h1>
               {deck.description && (
-                <p className="mt-2 max-w-xl text-sm leading-6 text-neutral-500 dark:text-neutral-400">
+                <p className="study-description">
                   {deck.description}
                 </p>
               )}
             </div>
-            <span className="rounded-full bg-neutral-100 px-3 py-1 text-xs font-bold text-neutral-600 dark:bg-neutral-800 dark:text-neutral-300">
-              {initialQueue.length} due / {deck._count.cards} total
-            </span>
+            <div className="study-count">
+              <strong>{initialQueue.length}</strong>
+              <span>due now</span>
+              <small>{deck._count.cards} cards total</small>
+            </div>
           </div>
         </header>
 
-        <section className="flex justify-center">
-          <FlashcardDeck initialQueue={initialQueue} />
+        <section className="study-session">
+          <FlashcardDeck initialQueue={initialQueue} language={languageName} />
         </section>
       </div>
     </main>

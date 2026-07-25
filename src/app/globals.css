@@ -2276,3 +2276,535 @@ body.has-custom-cursor textarea {
     font-size: 4rem;
   }
 }
+
+.study-page {
+  --study-accent: #e63d70;
+  --study-soft: #f6c49c;
+  position: relative;
+  min-height: 100svh;
+  overflow: hidden;
+  padding: 1.25rem;
+  color: var(--ink);
+  background:
+    linear-gradient(rgba(33, 30, 32, 0.045) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(33, 30, 32, 0.025) 1px, transparent 1px),
+    var(--paper);
+  background-size: 100% 28px, 28px 100%, auto;
+}
+
+.study-page[data-language="en"] {
+  --study-accent: #e63d70;
+  --study-soft: #f6c49c;
+}
+
+.study-page[data-language="fr"] {
+  --study-accent: #65475f;
+  --study-soft: #b998c9;
+}
+
+.study-page[data-language="es"] {
+  --study-accent: #e85432;
+  --study-soft: #f7e58a;
+}
+
+.study-page[data-language="de"] {
+  --study-accent: #2f6652;
+  --study-soft: #f6c49c;
+}
+
+.study-page[data-language="ja"] {
+  --study-accent: #c72c55;
+  --study-soft: #efb8c7;
+}
+
+.study-page::before {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.2;
+  background-image: repeating-linear-gradient(
+    115deg,
+    transparent 0,
+    transparent 5px,
+    rgba(33, 30, 32, 0.035) 5px,
+    rgba(33, 30, 32, 0.035) 6px
+  );
+  content: "";
+}
+
+.study-background-word {
+  position: fixed;
+  right: -0.05em;
+  bottom: -0.18em;
+  color: var(--study-accent);
+  font-family: var(--font-display);
+  font-size: clamp(10rem, 23vw, 25rem);
+  font-weight: 700;
+  line-height: 0.8;
+  opacity: 0.045;
+  pointer-events: none;
+}
+
+.study-shell {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  width: min(100%, 70rem);
+  min-height: calc(100svh - 2.5rem);
+  margin: 0 auto;
+  grid-template-rows: auto auto 1fr;
+  gap: 1.15rem;
+}
+
+.study-nav {
+  display: flex;
+  min-height: 3rem;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.study-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  border-bottom: 1px solid var(--ink);
+  padding: 0.35rem 0;
+  color: var(--ink);
+  font-size: 0.7rem;
+  font-weight: 900;
+  text-decoration: none;
+  text-transform: uppercase;
+  transition: color 160ms ease;
+}
+
+.study-back svg {
+  width: 1rem;
+  height: 1rem;
+}
+
+.study-back:hover,
+.study-back:focus-visible {
+  color: var(--study-accent);
+}
+
+.study-header {
+  position: relative;
+  border: 1px solid var(--ink);
+  padding: clamp(1.5rem, 3vw, 2.4rem);
+  background: var(--paper-bright);
+  box-shadow: 0.65rem 0.7rem 0 var(--study-soft);
+}
+
+.study-tape {
+  position: absolute;
+  top: -0.68rem;
+  left: 50%;
+  width: 6.5rem;
+  height: 1.35rem;
+  background: rgba(247, 229, 138, 0.78);
+  box-shadow: 0 1px 0 rgba(33, 30, 32, 0.13);
+  transform: translateX(-50%) rotate(-1.5deg);
+}
+
+.study-header-main {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 2rem;
+  align-items: center;
+}
+
+.study-kicker {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0;
+  color: var(--study-accent);
+  font-size: 0.64rem;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.study-kicker svg {
+  width: 1rem;
+  height: 1rem;
+}
+
+.study-header h1 {
+  margin: 0.5rem 0 0;
+  font-family: var(--font-display);
+  font-size: clamp(2.8rem, 5vw, 4.7rem);
+  font-weight: 700;
+  line-height: 0.9;
+}
+
+.study-description {
+  max-width: 38rem;
+  margin: 0.9rem 0 0;
+  color: rgba(33, 30, 32, 0.68);
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+.study-count {
+  display: grid;
+  min-width: 7.5rem;
+  padding: 0.85rem 1rem;
+  text-align: center;
+  background: var(--study-soft);
+  box-shadow: 0.25rem 0.3rem 0 var(--ink);
+  rotate: 2deg;
+}
+
+.study-count strong {
+  font-family: var(--font-display);
+  font-size: 2.4rem;
+  line-height: 0.8;
+}
+
+.study-count span,
+.study-count small {
+  margin-top: 0.3rem;
+  font-size: 0.58rem;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.study-count small {
+  opacity: 0.55;
+}
+
+.study-session {
+  display: grid;
+  min-height: 0;
+  place-items: center;
+  padding: 0.5rem 0 1.5rem;
+}
+
+.study-deck {
+  display: flex;
+  width: min(100%, 30rem);
+  flex-direction: column;
+  align-items: center;
+}
+
+.study-progress {
+  width: 100%;
+  margin-bottom: 1rem;
+  border: 1px solid var(--ink);
+  padding: 0.8rem 1rem 0.9rem;
+  background: var(--paper-bright);
+  box-shadow: 0.35rem 0.4rem 0 rgba(33, 30, 32, 0.13);
+}
+
+.study-progress-copy {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.62rem;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.study-progress-copy strong {
+  margin-left: 0.3rem;
+  color: var(--study-accent);
+  font-family: var(--font-display);
+  font-size: 1.15rem;
+}
+
+.study-progress-track {
+  height: 0.4rem;
+  margin-top: 0.55rem;
+  overflow: hidden;
+  background: rgba(33, 30, 32, 0.12);
+}
+
+.study-progress-fill {
+  height: 100%;
+  background: var(--study-accent);
+}
+
+.study-empty-card,
+.study-flashcard-wrap {
+  width: min(100%, 25rem);
+  height: clamp(18rem, 42vh, 22rem);
+}
+
+.study-empty-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border: 1px solid var(--ink);
+  padding: 2.5rem;
+  text-align: center;
+  background:
+    linear-gradient(rgba(33, 30, 32, 0.035) 1px, transparent 1px),
+    var(--paper-bright);
+  background-size: 100% 24px, auto;
+  box-shadow:
+    0.65rem 0.7rem 0 var(--study-accent),
+    0 1.4rem 2.5rem rgba(50, 37, 42, 0.12);
+  rotate: -0.7deg;
+}
+
+.study-empty-card::after {
+  position: absolute;
+  right: -2.5rem;
+  bottom: -2.5rem;
+  width: 7rem;
+  height: 7rem;
+  border: 1.2rem solid var(--study-soft);
+  border-radius: 50%;
+  content: "";
+  opacity: 0.65;
+}
+
+.study-empty-stamp {
+  position: absolute;
+  top: 1.1rem;
+  right: 1rem;
+  border: 2px solid var(--study-accent);
+  padding: 0.25rem 0.5rem;
+  color: var(--study-accent);
+  font-family: var(--font-display);
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  rotate: 5deg;
+}
+
+.study-empty-spark {
+  margin-bottom: 1rem;
+  color: var(--study-accent);
+  font-size: 2.2rem;
+}
+
+.study-empty-card > p {
+  max-width: 18rem;
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 5vw, 3rem);
+  font-weight: 700;
+  line-height: 0.95;
+}
+
+.study-empty-card > small {
+  max-width: 19rem;
+  margin-top: 1rem;
+  color: rgba(33, 30, 32, 0.62);
+  font-size: 0.78rem;
+  line-height: 1.5;
+}
+
+.study-empty-card > strong {
+  margin-top: 1.25rem;
+  color: var(--study-accent);
+  font-family: var(--font-display);
+  font-size: 1rem;
+  font-style: italic;
+}
+
+.study-flashcard {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  cursor: pointer;
+}
+
+.study-flashcard-face {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--ink);
+  padding: 2.5rem;
+  text-align: center;
+  box-shadow:
+    0.65rem 0.7rem 0 var(--study-accent),
+    0 1.4rem 2.5rem rgba(50, 37, 42, 0.13);
+}
+
+.study-flashcard-front {
+  background:
+    linear-gradient(rgba(33, 30, 32, 0.035) 1px, transparent 1px),
+    var(--paper-bright);
+  background-size: 100% 24px, auto;
+}
+
+.study-flashcard-back {
+  background: var(--study-soft);
+}
+
+.study-card-language,
+.study-flashcard-back > span {
+  position: absolute;
+  top: 1.25rem;
+  right: 1.25rem;
+  color: var(--study-accent);
+  font-size: 0.62rem;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.study-card-index {
+  position: absolute;
+  top: 1.25rem;
+  left: 1.25rem;
+  font-family: var(--font-display);
+  font-size: 0.75rem;
+  font-style: italic;
+}
+
+.study-flashcard-face h2 {
+  margin: 0;
+  font-family: var(--font-display), "Yu Mincho", "Hiragino Mincho ProN", serif;
+  font-size: clamp(2.5rem, 7vw, 4.5rem);
+  font-weight: 700;
+  line-height: 0.95;
+}
+
+.study-flashcard-back h2 {
+  font-size: clamp(2rem, 5vw, 3.3rem);
+}
+
+.study-flashcard-face > p {
+  position: absolute;
+  bottom: 1.35rem;
+  margin: 0;
+  color: rgba(33, 30, 32, 0.55);
+  font-size: 0.68rem;
+  font-weight: 800;
+}
+
+.study-grading {
+  display: grid;
+  width: min(100%, 25rem);
+  margin-top: 1rem;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.45rem;
+}
+
+.study-grade {
+  display: grid;
+  min-height: 3.4rem;
+  place-items: center;
+  gap: 0.1rem;
+  border: 1px solid var(--ink);
+  padding: 0.45rem;
+  color: var(--ink);
+  background: var(--paper-bright);
+  transition:
+    color 160ms ease,
+    background 160ms ease,
+    translate 160ms ease;
+}
+
+.study-grade span {
+  font-size: 0.55rem;
+  font-weight: 900;
+  opacity: 0.55;
+}
+
+.study-grade strong {
+  font-family: var(--font-display);
+  font-size: 0.9rem;
+}
+
+.study-grade:hover,
+.study-grade:focus-visible {
+  color: var(--paper-bright);
+  background: var(--study-accent);
+  translate: 0 -0.2rem;
+}
+
+.study-doodle {
+  position: fixed;
+  z-index: 1;
+  color: var(--study-accent);
+  pointer-events: none;
+}
+
+.study-doodle-left {
+  top: 38%;
+  left: 4%;
+  rotate: -12deg;
+}
+
+.study-doodle-left svg {
+  width: 3rem;
+  height: 3rem;
+}
+
+.study-doodle-right {
+  right: 4%;
+  bottom: 22%;
+  font-family: var(--font-script);
+  font-size: 2.4rem;
+  rotate: 8deg;
+}
+
+@media (max-width: 700px) {
+  .study-page {
+    overflow: visible;
+    padding: 0.9rem;
+  }
+
+  .study-shell {
+    min-height: calc(100svh - 1.8rem);
+  }
+
+  .study-header-main {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .study-header h1 {
+    font-size: 2.65rem;
+  }
+
+  .study-count {
+    width: 100%;
+    min-width: 0;
+    grid-template-columns: auto 1fr auto;
+    gap: 0.6rem;
+    align-items: center;
+    text-align: left;
+    rotate: 0deg;
+  }
+
+  .study-count span,
+  .study-count small {
+    margin-top: 0;
+  }
+
+  .study-count small {
+    text-align: right;
+  }
+
+  .study-session {
+    padding-top: 0.25rem;
+  }
+
+  .study-empty-card,
+  .study-flashcard-wrap {
+    height: min(21rem, 44svh);
+    min-height: 18rem;
+  }
+
+  .study-empty-card {
+    padding: 2rem 1.35rem;
+  }
+
+  .study-empty-card > p {
+    font-size: 2.2rem;
+  }
+
+  .study-doodle {
+    display: none;
+  }
+}

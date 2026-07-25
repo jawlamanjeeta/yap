@@ -4,10 +4,10 @@ import { useCallback, useEffect } from "react";
 import { useSessionStore } from "@/store/useSessionStore";
 
 const gradeOptions = [
-  { key: 1, label: "Again", tone: "hover:border-red-400 hover:bg-red-50 dark:hover:bg-red-500/10" },
-  { key: 2, label: "Hard", tone: "hover:border-amber-400 hover:bg-amber-50 dark:hover:bg-amber-500/10" },
-  { key: 3, label: "Good", tone: "hover:border-sky-400 hover:bg-sky-50 dark:hover:bg-sky-500/10" },
-  { key: 4, label: "Easy", tone: "hover:border-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-500/10" },
+  { key: 1, label: "Again", tone: "again" },
+  { key: 2, label: "Hard", tone: "hard" },
+  { key: 3, label: "Good", tone: "good" },
+  { key: 4, label: "Easy", tone: "easy" },
 ];
 
 export default function GradingControls() {
@@ -51,15 +51,15 @@ export default function GradingControls() {
   if (isFinished() || queue.length === 0) return null;
 
   return (
-    <div className="mt-4 grid w-full max-w-sm grid-cols-2 gap-2 sm:grid-cols-4">
+    <div className="study-grading">
       {gradeOptions.map((item) => (
         <button
           key={item.key}
           onClick={() => handleGrade(item.key)}
-          className={`rounded-lg border border-neutral-200 bg-white py-3 text-center transition dark:border-neutral-800 dark:bg-neutral-900 ${item.tone}`}
+          className={`study-grade study-grade-${item.tone}`}
         >
-          <span className="block text-xs font-bold text-neutral-400">{item.key}</span>
-          <span className="text-sm font-black text-neutral-950 dark:text-white">{item.label}</span>
+          <span>{item.key}</span>
+          <strong>{item.label}</strong>
         </button>
       ))}
     </div>

@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useSessionStore } from "@/store/useSessionStore";
 
-export default function Flashcard() {
+export default function Flashcard({ language }: { language: string }) {
   const { queue, currentIndex, isFinished } = useSessionStore();
   const [isFlipped, setIsFlipped] = useState(false);
 
@@ -14,15 +14,18 @@ export default function Flashcard() {
 
   if (isFinished() || queue.length === 0) {
     return (
-      <div className="flex h-80 w-full max-w-sm flex-col items-center justify-center rounded-lg border border-neutral-200 bg-white p-6 text-center shadow-sm dark:border-neutral-800 dark:bg-neutral-900">
-        <p className="text-lg font-black tracking-tight">
+      <div className="study-empty-card">
+        <span className="study-empty-stamp">{language}</span>
+        <span className="study-empty-spark" aria-hidden="true">✦</span>
+        <p>
           {queue.length === 0 ? "No cards due right now" : "Session complete"}
         </p>
-        <p className="mt-2 text-sm leading-6 text-neutral-500 dark:text-neutral-400">
+        <small>
           {queue.length === 0
             ? "Your scheduled reviews are caught up for this deck."
             : "Nice work. The reviewed cards have new SM-2 dates."}
-        </p>
+        </small>
+        <strong>{queue.length === 0 ? "Come back fresh tomorrow." : "That was worth yapping about."}</strong>
       </div>
     );
   }
@@ -30,7 +33,7 @@ export default function Flashcard() {
   const currentCard = queue[currentIndex].card;
 
   return (
-    <div className="relative h-80 w-full max-w-sm [perspective:1000px]">
+    <div className="study-flashcard-wrap [perspective:1000px]">
       <AnimatePresence mode="wait">
         <motion.div
           key={queue[currentIndex].id}
@@ -47,25 +50,28 @@ export default function Flashcard() {
             stiffness: 260,
             damping: 20,
           }}
-          className="relative h-full w-full cursor-pointer [transform-style:preserve-3d]"
+          className="study-flashcard [transform-style:preserve-3d]"
           onClick={() => setIsFlipped(!isFlipped)}
         >
-          <div className="absolute inset-0 flex flex-col items-center justify-center rounded-lg border border-neutral-200 bg-white p-6 shadow-sm [backface-visibility:hidden] dark:border-neutral-800 dark:bg-neutral-900">
-            <span className="absolute right-4 top-4 text-xs font-bold uppercase tracking-[0.12em] text-neutral-400">
-              {currentCard.language}
+          <div className="study-flashcard-face study-flashcard-front [backface-visibility:hidden]">
+            <span className="study-card-language">
+              {language}
             </span>
-            <h2 className="text-center text-4xl font-black tracking-tight text-neutral-950 dark:text-white">
+            <span className="study-card-index">say it aloud</span>
+            <h2>
               {currentCard.frontText}
             </h2>
-            <p className="absolute bottom-6 text-sm font-semibold text-neutral-400">
-              Tap to reveal
+            <p>
+              Tap to reveal the meaning
             </p>
           </div>
 
-          <div className="absolute inset-0 flex flex-col items-center justify-center rounded-lg border border-emerald-200 bg-emerald-50 p-6 shadow-sm [backface-visibility:hidden] [transform:rotateY(180deg)] dark:border-emerald-500/30 dark:bg-emerald-500/10">
-            <h2 className="text-center text-3xl font-black tracking-tight text-neutral-950 dark:text-white">
+          <div className="study-flashcard-face study-flashcard-back [backface-visibility:hidden] [transform:rotateY(180deg)]">
+            <span>meaning</span>
+            <h2>
               {currentCard.backText}
             </h2>
+            <p>How well did you remember it?</p>
           </div>
         </motion.div>
       </AnimatePresence>

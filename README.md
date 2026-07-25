@@ -4,7 +4,7 @@ Duolingo-style language practice built with Next.js, PostgreSQL, Prisma, OpenAI 
 
 ## What is built
 
-- App dashboard with due-card stats, deck list, XP, and speaking-practice entry point
+- App dashboard with due-card stats, five starter decks, XP, and speaking-practice entry point
 - SM-2 flashcard scheduling stored in PostgreSQL through Prisma
 - Voice recording with the MediaRecorder API
 - Live browser transcript with the Web Speech API
@@ -39,4 +39,5 @@ Email: recruiter@faang.com
 Password: DemoPassword123!
 ```
 
-The demo account and Spanish starter deck are enough to try the full review and speaking loop locally.
+The repeatable seed preserves existing users and creates ten starter cards each for English,
+French, Spanish, German, and Japanese. The demo account can try the full review and speaking loop.

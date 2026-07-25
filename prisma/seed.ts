@@ -1,82 +1,127 @@
 import { PrismaClient } from "@prisma/client";
 import { hash } from "bcryptjs";
+import { loadEnvConfig } from "@next/env";
+import { launchLanguages } from "../src/lib/languages";
+import { starterDecks } from "./starter-decks";
+
+loadEnvConfig(process.cwd());
 
 const prisma = new PrismaClient();
 
 async function main() {
   console.log("Seeding database...");
 
-  // 1. Clean existing data to prevent unique constraint errors during re-seeding
-  await prisma.userCard.deleteMany({});
-  await prisma.card.deleteMany({});
-  await prisma.deck.deleteMany({});
-  await prisma.user.deleteMany({});
+  const configuredLanguages = new Set(launchLanguages.map((language) => language.label));
+  const seededLanguages = new Set(starterDecks.map((deck) => deck.language));
 
-  // 2. Create a default Recruiter/Test User
-  const user = await prisma.user.create({
-    data: {
+  if (
+    configuredLanguages.size !== seededLanguages.size ||
+    Array.from(configuredLanguages).some((language) => !seededLanguages.has(language))
+  ) {
+    throw new Error("Chat languages and starter deck languages must stay in sync.");
+  }
+
+  const demoPasswordHash = await hash("DemoPassword123!", 12);
+  const demoUser = await prisma.user.upsert({
+    where: { email: "recruiter@faang.com" },
+    update: {},
+    create: {
       email: "recruiter@faang.com",
       name: "Test User",
-      passwordHash: await hash("DemoPassword123!", 12),
-      xp: 0,
-      currentStreak: 0,
-      enrollments: {
-        create: ["Spanish", "French", "German", "Japanese", "English"].map((language) => ({
-          language,
-        })),
-      },
+      passwordHash: demoPasswordHash,
     },
   });
 
-  // 3. Create a default Spanish Vocabulary Deck
-  const deck = await prisma.deck.create({
-    data: {
-      title: "Core Spanish 101",
-      description: "High-frequency words to test the SM-2 algorithm.",
-      language: "es",
-    },
-  });
+  const allCardIds: string[] = [];
 
-  // 4. Define the Flashcards
-  const initialCards = [
-    { frontText: "El perro", backText: "The dog", language: "es" },
-    { frontText: "La biblioteca", backText: "The library", language: "es" },
-    { frontText: "Siempre", backText: "Always", language: "es" },
-    { frontText: "Desayuno", backText: "Breakfast", language: "es" },
-    { frontText: "Cansado", backText: "Tired", language: "es" },
-  ];
-
-  // 5. Create Cards and link them to the Deck
-  for (const card of initialCards) {
-    const createdCard = await prisma.card.create({
-      data: {
-        deckId: deck.id,
-        frontText: card.frontText,
-        backText: card.backText,
-        language: card.language,
-      },
+  for (const starterDeck of starterDecks) {
+    const existingDeck = await prisma.deck.findFirst({
+      where: { language: starterDeck.languageCode },
     });
 
-    // 6. Initialize SM-2 parameters for the Test User
-    // We set nextReview to yesterday so they immediately appear in the due queue.
-    const yesterday = new Date();
-    yesterday.setDate(yesterday.getDate() - 1);
+    if (existingDeck?.title === "Core Spanish 101") {
+      await prisma.card.deleteMany({
+        where: {
+          deckId: existingDeck.id,
+          frontText: {
+            in: ["El perro", "La biblioteca", "Siempre", "Desayuno", "Cansado"],
+          },
+        },
+      });
+    }
 
-    await prisma.userCard.create({
-      data: {
+    const deck = existingDeck
+      ? await prisma.deck.update({
+          where: { id: existingDeck.id },
+          data: {
+            title: starterDeck.title,
+            description: starterDeck.description,
+          },
+        })
+      : await prisma.deck.create({
+          data: {
+            title: starterDeck.title,
+            description: starterDeck.description,
+            language: starterDeck.languageCode,
+          },
+        });
+
+    for (const starterCard of starterDeck.cards) {
+      const existingCard = await prisma.card.findFirst({
+        where: {
+          deckId: deck.id,
+          frontText: starterCard.frontText,
+        },
+      });
+
+      const card = existingCard
+        ? await prisma.card.update({
+            where: { id: existingCard.id },
+            data: {
+              backText: starterCard.backText,
+              language: starterDeck.languageCode,
+            },
+          })
+        : await prisma.card.create({
+            data: {
+              deckId: deck.id,
+              frontText: starterCard.frontText,
+              backText: starterCard.backText,
+              language: starterDeck.languageCode,
+            },
+          });
+
+      allCardIds.push(card.id);
+    }
+  }
+
+  const users = await prisma.user.findMany({ select: { id: true } });
+  const yesterday = new Date();
+  yesterday.setDate(yesterday.getDate() - 1);
+
+  for (const user of users) {
+    await prisma.languageEnrollment.createMany({
+      data: starterDecks.map((deck) => ({
         userId: user.id,
-        cardId: createdCard.id,
-        interval: 0,
-        repetition: 0,
-        easeFactor: 2.5,
+        language: deck.language,
+      })),
+      skipDuplicates: true,
+    });
+
+    await prisma.userCard.createMany({
+      data: allCardIds.map((cardId) => ({
+        userId: user.id,
+        cardId,
         nextReview: yesterday,
-      },
+      })),
+      skipDuplicates: true,
     });
   }
 
   console.log("Database seeding completed successfully.");
-  console.log(`Test User ID: ${user.id}`);
-  console.log(`Test Deck ID: ${deck.id}`);
+  console.log(`Starter decks: ${starterDecks.length}`);
+  console.log(`Starter cards: ${allCardIds.length}`);
+  console.log(`Demo user ID: ${demoUser.id}`);
 }
 
 main()

@@ -1,4 +1,5 @@
 import { PrismaClient } from "@prisma/client";
+import { hash } from "bcryptjs";
 
 const prisma = new PrismaClient();
 
@@ -16,8 +17,14 @@ async function main() {
     data: {
       email: "recruiter@faang.com",
       name: "Test User",
+      passwordHash: await hash("DemoPassword123!", 12),
       xp: 0,
       currentStreak: 0,
+      enrollments: {
+        create: ["Spanish", "French", "German", "Japanese", "English"].map((language) => ({
+          language,
+        })),
+      },
     },
   });
 
@@ -26,6 +33,7 @@ async function main() {
     data: {
       title: "Core Spanish 101",
       description: "High-frequency words to test the SM-2 algorithm.",
+      language: "es",
     },
   });
 

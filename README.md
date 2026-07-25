@@ -10,6 +10,8 @@ Duolingo-style language practice built with Next.js, PostgreSQL, Prisma, OpenAI 
 - Live browser transcript with the Web Speech API
 - Whisper transcription endpoint with pronunciation clarity feedback
 - GPT-4o tutor endpoint with grammar correction, suggested replies, and CEFR-style fluency estimates
+- Auth.js credential accounts with hashed passwords and protected learning routes
+- User-owned review history, conversations, language enrollments, activity, XP, and streak data
 
 ## Setup
 
@@ -18,6 +20,7 @@ Create `.env.local` from `.env.example` and provide:
 ```bash
 DATABASE_URL=""
 OPENAI_API_KEY=""
+AUTH_SECRET=""
 ```
 
 Then prepare the database and run the app:
@@ -29,4 +32,11 @@ npm run db:seed
 npm run dev
 ```
 
-The seeded demo user and Spanish starter deck are enough to try the full review and speaking loop locally.
+Generate a strong `AUTH_SECRET` before running the app. The seeded demo account is:
+
+```text
+Email: recruiter@faang.com
+Password: DemoPassword123!
+```
+
+The demo account and Spanish starter deck are enough to try the full review and speaking loop locally.

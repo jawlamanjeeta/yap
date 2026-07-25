@@ -13,6 +13,7 @@ import { useAudioRecorder } from "@/hooks/useAudioRecorder";
 import { useSpeechRecognition } from "@/hooks/useSpeechRecognition";
 import { useTTS } from "@/hooks/useTTS";
 import type { CefrEstimate } from "@/utils/cefr";
+import { getLaunchLanguage, launchLanguages } from "@/lib/languages";
 
 type Message = {
   role: "user" | "assistant";
@@ -29,6 +30,7 @@ type PronunciationFeedback = {
 };
 
 type TutorApiResponse = {
+  conversationId: string;
   reply: string;
   correction: string;
   grammarNotes: string[];
@@ -41,23 +43,20 @@ type TranscribeApiResponse = {
   pronunciation: PronunciationFeedback;
 };
 
-const languageOptions = [
-  { label: "Spanish", value: "Spanish", speechCode: "es-ES", whisperCode: "es" },
-  { label: "French", value: "French", speechCode: "fr-FR", whisperCode: "fr" },
-  { label: "German", value: "German", speechCode: "de-DE", whisperCode: "de" },
-  { label: "Japanese", value: "Japanese", speechCode: "ja-JP", whisperCode: "ja" },
-];
+function openingMessage(language: ReturnType<typeof getLaunchLanguage>): Message {
+  return {
+    role: "assistant",
+    content: language.greeting,
+    suggestedReply: language.suggestedReply,
+  };
+}
 
-export default function ChatInterface() {
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      role: "assistant",
-      content: "Hola. Que hiciste hoy?",
-      suggestedReply: "Hoy estudie vocabulario y practique hablar.",
-    },
-  ]);
+export default function ChatInterface({ initialLanguage }: { initialLanguage: string }) {
+  const initialOption = getLaunchLanguage(initialLanguage);
+  const [messages, setMessages] = useState<Message[]>([openingMessage(initialOption)]);
   const [draft, setDraft] = useState("");
-  const [selectedLanguage, setSelectedLanguage] = useState(languageOptions[0]);
+  const [selectedLanguage, setSelectedLanguage] = useState(initialOption);
+  const [conversationId, setConversationId] = useState<string | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [lastCefr, setLastCefr] = useState<CefrEstimate | null>(null);
@@ -88,7 +87,9 @@ export default function ChatInterface() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          language: selectedLanguage.value,
+          language: selectedLanguage.label,
+          conversationId,
+          pronunciation,
           messages: nextMessages.map(({ role, content }) => ({ role, content })),
         }),
       });
@@ -98,6 +99,7 @@ export default function ChatInterface() {
       }
 
       const data = (await response.json()) as TutorApiResponse;
+      setConversationId(data.conversationId);
       setLastCefr(data.cefr);
       setMessages((current) => [
         ...current,
@@ -178,16 +180,21 @@ export default function ChatInterface() {
             <h1 className="mt-1 text-xl font-black tracking-tight">Speaking practice</h1>
           </div>
           <select
-            value={selectedLanguage.value}
+            value={selectedLanguage.label}
             onChange={(event) => {
-              const option = languageOptions.find((language) => language.value === event.target.value);
-              if (option) setSelectedLanguage(option);
+              const option = getLaunchLanguage(event.target.value);
+              setSelectedLanguage(option);
+              setMessages([openingMessage(option)]);
+              setConversationId(null);
+              setLastCefr(null);
+              setLastPronunciation(null);
+              setDraft("");
             }}
             className="rounded-lg border border-neutral-300 bg-white px-3 py-2 text-sm font-semibold outline-none transition focus:border-amber-500 dark:border-neutral-700 dark:bg-neutral-950"
             aria-label="Target language"
           >
-            {languageOptions.map((language) => (
-              <option key={language.value} value={language.value}>
+            {launchLanguages.map((language) => (
+              <option key={language.label} value={language.label}>
                 {language.label}
               </option>
             ))}
@@ -276,7 +283,7 @@ export default function ChatInterface() {
           <input
             value={draft}
             onChange={(event) => setDraft(event.target.value)}
-            placeholder={`Type in ${selectedLanguage.value} or record your voice`}
+            placeholder={`Type in ${selectedLanguage.label} or record your voice`}
             className="min-w-0 flex-1 rounded-lg border border-neutral-300 bg-white px-3 text-sm outline-none transition placeholder:text-neutral-400 focus:border-amber-500 dark:border-neutral-700 dark:bg-neutral-950"
           />
           <button

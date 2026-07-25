@@ -7,10 +7,15 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
 import AnimatedMascot from "./AnimatedMascot";
+import LogoutButton from "@/components/auth/LogoutButton";
 
 gsap.registerPlugin(useGSAP, ScrollTrigger);
 
-export default function LandingHero() {
+export default function LandingHero({
+  currentUser,
+}: {
+  currentUser: { name: string } | null;
+}) {
   const scopeRef = useRef<HTMLElement>(null);
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
 
@@ -179,10 +184,26 @@ export default function LandingHero() {
           <Link href="#decks">Your words</Link>
         </nav>
 
-        <Link href="/chat" className="editorial-nav-action">
-          <Mic aria-hidden="true" />
-          Start yapping
-        </Link>
+        {currentUser ? (
+          <div className="editorial-account">
+            <span>{currentUser.name}</span>
+            <Link href="/chat" className="editorial-nav-action">
+              <Mic aria-hidden="true" />
+              Start yapping
+            </Link>
+            <LogoutButton compact />
+          </div>
+        ) : (
+          <div className="editorial-account">
+            <Link href="/login" className="editorial-login">
+              Log in
+            </Link>
+            <Link href="/signup" className="editorial-nav-action">
+              <Mic aria-hidden="true" />
+              Start yapping
+            </Link>
+          </div>
+        )}
       </header>
 
       <div className="editorial-canvas">

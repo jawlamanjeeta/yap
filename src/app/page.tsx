@@ -15,13 +15,12 @@ import {
 import { prisma } from "@/lib/prisma";
 import HorizontalLanding from "@/components/landing/HorizontalLanding";
 import LandingHero from "@/components/landing/LandingHero";
+import { getCurrentUser } from "@/lib/auth-user";
 
 export const dynamic = "force-dynamic";
 
 async function getDashboardData() {
-  const user = await prisma.user.findFirst({
-    orderBy: { email: "asc" },
-  });
+  const user = await getCurrentUser();
 
   const decks = await prisma.deck.findMany({
     include: {
@@ -67,7 +66,7 @@ export default async function DashboardPage() {
   return (
     <main className="landing-page">
       <HorizontalLanding>
-        <LandingHero />
+        <LandingHero currentUser={user ? { name: user.name ?? "Learner" } : null} />
 
         <section id="how-it-works" className="story-section">
         <div className="story-heading deck-reveal">

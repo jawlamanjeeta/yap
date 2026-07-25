@@ -2,29 +2,23 @@
 
 import { prisma } from "@/lib/prisma";
 import { scheduleNextReview } from "@/utils/sm2";
+import { getAuthenticatedUserId } from "@/lib/auth-user";
+import { recordUserActivity } from "@/lib/activity";
 
-/**
- * Fetches a batch of cards that are currently due for a specific user and deck.
- */
-export async function getDueCards(userId: string, deckId: string, limit: number = 20) {
+export async function getDueCards(deckId: string, limit = 20) {
   try {
+    const userId = await getAuthenticatedUserId();
+    if (!userId) return { success: false, error: "Authentication required." };
+
     const dueCards = await prisma.userCard.findMany({
       where: {
-        userId: userId,
-        card: {
-          deckId: deckId,
-        },
-        nextReview: {
-          lte: new Date(), // Only fetch cards where nextReview is in the past or now
-        },
+        userId,
+        card: { deckId },
+        nextReview: { lte: new Date() },
       },
-      include: {
-        card: true, // Join the actual front/back text from the Card table
-      },
-      orderBy: {
-        nextReview: "asc", // Prioritize the most overdue cards first
-      },
-      take: limit,
+      include: { card: true },
+      orderBy: { nextReview: "asc" },
+      take: Math.max(1, Math.min(50, limit)),
     });
 
     return { success: true, data: dueCards };
@@ -34,18 +28,23 @@ export async function getDueCards(userId: string, deckId: string, limit: number 
   }
 }
 
-/**
- * Processes a user's grade (0-5), calculates the new SM-2 intervals, and updates PostgreSQL.
- */
 export async function submitCardReview(userCardId: string, quality: number) {
   try {
-    // 1. Fetch current SM-2 stats from the database
-    const currentRecord = await prisma.userCard.findUnique({
-      where: { id: userCardId },
+    const userId = await getAuthenticatedUserId();
+    if (!userId) return { success: false, error: "Authentication required." };
+    if (!Number.isFinite(quality) || quality < 0 || quality > 5) {
+      return { success: false, error: "Invalid review quality." };
+    }
+
+    const currentRecord = await prisma.userCard.findFirst({
+      where: {
+        id: userCardId,
+        userId,
+      },
     });
 
     if (!currentRecord) {
-      throw new Error("User card record not found.");
+      return { success: false, error: "Card not found for this user." };
     }
 
     const { interval, repetition, easeFactor, nextReview } = scheduleNextReview(quality, {
@@ -54,29 +53,38 @@ export async function submitCardReview(userCardId: string, quality: number) {
       easeFactor: currentRecord.easeFactor,
     });
 
-    const updatedCard = await prisma.userCard.update({
-      where: { id: userCardId },
-      data: {
-        interval,
-        repetition,
-        easeFactor,
-        nextReview,
-      },
-    });
-
-    if (quality >= 3) {
-      await prisma.user.update({
-        where: { id: currentRecord.userId },
+    const updatedCard = await prisma.$transaction(async (transaction) => {
+      const card = await transaction.userCard.update({
+        where: { id: userCardId },
         data: {
-          xp: { increment: quality * 10 },
-          currentStreak: { increment: currentRecord.repetition === 0 ? 1 : 0 },
+          interval,
+          repetition,
+          easeFactor,
+          nextReview,
         },
       });
-    }
+
+      await transaction.reviewLog.create({
+        data: {
+          userId,
+          userCardId,
+          quality: Math.round(quality),
+          intervalBefore: currentRecord.interval,
+          intervalAfter: interval,
+        },
+      });
+
+      return card;
+    });
+
+    await recordUserActivity(userId, {
+      xp: quality >= 3 ? quality * 10 : 5,
+      reviews: 1,
+    });
 
     return { success: true, data: updatedCard };
   } catch (error) {
-    console.error("Error submitting card review:", error);
+    console.error("Error submitting review:", error);
     return { success: false, error: "Failed to submit review." };
   }
 }

@@ -67,15 +67,53 @@ export default function HorizontalLanding({ children }: { children: ReactNode })
       });
     };
 
+    const moveToHash = (animate = true) => {
+      const hash = window.location.hash.slice(1);
+      if (!hash) return;
+
+      const target = document.getElementById(hash);
+      if (!target) return;
+
+      if (!desktop.matches) {
+        target.scrollIntoView({ behavior: animate ? "smooth" : "auto" });
+        return;
+      }
+
+      destinationRef.current = gsap.utils.clamp(
+        0,
+        scroller.scrollWidth - scroller.clientWidth,
+        target.offsetLeft,
+      );
+
+      if (!animate) {
+        scroller.scrollLeft = destinationRef.current;
+        updateProgress();
+        return;
+      }
+
+      gsap.to(scroller, {
+        scrollLeft: destinationRef.current,
+        duration: 0.8,
+        ease: "power3.inOut",
+        overwrite: "auto",
+        onUpdate: updateProgress,
+      });
+    };
+
+    const handleHashChange = () => moveToHash(true);
+
     scroller.addEventListener("scroll", updateProgress, { passive: true });
     window.addEventListener("wheel", handleWheel, { passive: false, capture: true });
     window.addEventListener("keydown", handleKeyDown);
+    window.addEventListener("hashchange", handleHashChange);
     updateProgress();
+    requestAnimationFrame(() => moveToHash(false));
 
     return () => {
       scroller.removeEventListener("scroll", updateProgress);
       window.removeEventListener("wheel", handleWheel, { capture: true });
       window.removeEventListener("keydown", handleKeyDown);
+      window.removeEventListener("hashchange", handleHashChange);
       gsap.killTweensOf(scroller);
     };
   }, []);

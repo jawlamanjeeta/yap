@@ -81,7 +81,7 @@ export default async function StudyPage({
       <div className="study-shell">
         <nav className="study-nav" aria-label="Study navigation">
           <Link
-            href="/"
+            href="/#decks"
             className="study-back"
           >
             <ArrowLeft aria-hidden="true" />

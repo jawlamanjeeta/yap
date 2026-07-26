@@ -46,11 +46,25 @@ export default function HorizontalLanding({ children }: { children: ReactNode })
     };
 
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (!desktop.matches || event.target instanceof HTMLInputElement) return;
-      if (!["ArrowLeft", "ArrowRight", "PageUp", "PageDown"].includes(event.key)) return;
+      const target = event.target;
+      const isEditing =
+        target instanceof HTMLInputElement ||
+        target instanceof HTMLTextAreaElement ||
+        target instanceof HTMLSelectElement ||
+        (target instanceof HTMLElement && target.isContentEditable);
+
+      if (!desktop.matches || isEditing) return;
+      if (
+        !["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", "PageUp", "PageDown"].includes(
+          event.key,
+        )
+      ) {
+        return;
+      }
 
       event.preventDefault();
-      const direction = event.key === "ArrowLeft" || event.key === "PageUp" ? -1 : 1;
+      const direction =
+        event.key === "ArrowLeft" || event.key === "ArrowUp" || event.key === "PageUp" ? -1 : 1;
       const nextPanel = Math.round(scroller.scrollLeft / scroller.clientWidth) + direction;
       destinationRef.current = gsap.utils.clamp(
         0,

@@ -6,7 +6,7 @@ import { Prisma } from "@prisma/client";
 import { z } from "zod";
 import { signIn, signOut } from "../../auth";
 import { prisma } from "@/lib/prisma";
-import { launchLanguages } from "@/lib/languages";
+import { isLaunchLanguage, launchLanguages } from "@/lib/languages";
 
 export type AuthActionState = {
   error?: string;
@@ -15,6 +15,7 @@ export type AuthActionState = {
     email?: string[];
     password?: string[];
     confirmPassword?: string[];
+    preferredLanguage?: string[];
   };
 };
 
@@ -27,6 +28,9 @@ const signupSchema = loginSchema
   .extend({
     name: z.string().trim().min(2, "Name must be at least 2 characters.").max(50),
     confirmPassword: z.string(),
+    preferredLanguage: z
+      .string()
+      .refine(isLaunchLanguage, "Choose one of the five available languages."),
   })
   .refine((data) => data.password === data.confirmPassword, {
     message: "Passwords do not match.",
@@ -74,13 +78,14 @@ export async function signupAction(
     email: formData.get("email"),
     password: formData.get("password"),
     confirmPassword: formData.get("confirmPassword"),
+    preferredLanguage: formData.get("preferredLanguage"),
   });
 
   if (!result.success) {
     return { fields: result.error.flatten().fieldErrors };
   }
 
-  const { name, email, password } = result.data;
+  const { name, email, password, preferredLanguage } = result.data;
 
   try {
     const passwordHash = await hash(password, 12);
@@ -91,6 +96,7 @@ export async function signupAction(
           name,
           email,
           passwordHash,
+          preferredLanguage,
         },
       });
 

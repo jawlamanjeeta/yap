@@ -3,12 +3,20 @@
 import Link from "next/link";
 import { useActionState } from "react";
 import { useFormStatus } from "react-dom";
-import { ArrowRight, LoaderCircle, LockKeyhole, Mail, UserRound } from "lucide-react";
+import {
+  ArrowRight,
+  Languages,
+  LoaderCircle,
+  LockKeyhole,
+  Mail,
+  UserRound,
+} from "lucide-react";
 import {
   loginAction,
   signupAction,
   type AuthActionState,
 } from "@/actions/auth.actions";
+import { launchLanguages } from "@/lib/languages";
 
 const initialState: AuthActionState = {};
 
@@ -18,18 +26,21 @@ export default function AuthForm({ mode }: { mode: "login" | "signup" }) {
   const isSignup = mode === "signup";
 
   return (
-    <form action={formAction} className="auth-form">
+    <form action={formAction} className={`auth-form ${isSignup ? "auth-form-signup" : ""}`}>
       {state.error && <p className="auth-form-error">{state.error}</p>}
 
       {isSignup && (
-        <Field
-          id="name"
-          name="name"
-          label="Your name"
-          autoComplete="name"
-          icon={UserRound}
-          errors={state.fields?.name}
-        />
+        <>
+          <Field
+            id="name"
+            name="name"
+            label="Your name"
+            autoComplete="name"
+            icon={UserRound}
+            errors={state.fields?.name}
+          />
+          <LanguageSelect errors={state.fields?.preferredLanguage} />
+        </>
       )}
 
       <Field
@@ -92,11 +103,35 @@ function Field({
   errors?: string[];
 }) {
   return (
-    <label className="auth-field" htmlFor={id}>
+    <label className={`auth-field auth-field-${id}`} htmlFor={id}>
       <span>{label}</span>
       <div>
         <Icon aria-hidden="true" />
         <input id={id} required {...inputProps} />
+      </div>
+      {errors?.map((error) => (
+        <small key={error}>{error}</small>
+      ))}
+    </label>
+  );
+}
+
+function LanguageSelect({ errors }: { errors?: string[] }) {
+  return (
+    <label className="auth-field auth-field-preferredLanguage" htmlFor="preferredLanguage">
+      <span>I want to learn</span>
+      <div>
+        <Languages aria-hidden="true" />
+        <select id="preferredLanguage" name="preferredLanguage" defaultValue="" required>
+          <option value="" disabled>
+            Choose a language
+          </option>
+          {launchLanguages.map((language) => (
+            <option key={language.label} value={language.label}>
+              {language.label}
+            </option>
+          ))}
+        </select>
       </div>
       {errors?.map((error) => (
         <small key={error}>{error}</small>

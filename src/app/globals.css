@@ -2227,6 +2227,19 @@ body.has-custom-cursor textarea {
   margin-top: 1.25rem;
 }
 
+.auth-form-signup {
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+}
+
+.auth-form-signup .auth-form-error,
+.auth-form-signup .auth-field-email,
+.auth-form-signup .auth-field-password,
+.auth-form-signup .auth-field-confirmPassword,
+.auth-form-signup .auth-submit,
+.auth-form-signup .auth-switch {
+  grid-column: 1 / -1;
+}
+
 .auth-panel-signup h1 {
   font-size: clamp(3.6rem, 5vw, 5.2rem);
 }
@@ -2235,7 +2248,8 @@ body.has-custom-cursor textarea {
   gap: 0.3rem;
 }
 
-.auth-panel-signup .auth-field input {
+.auth-panel-signup .auth-field input,
+.auth-panel-signup .auth-field select {
   height: 2.75rem;
 }
 
@@ -2279,7 +2293,8 @@ body.has-custom-cursor textarea {
   color: var(--pink);
 }
 
-.auth-field input {
+.auth-field input,
+.auth-field select {
   min-width: 0;
   height: 3rem;
   border: 0;
@@ -2288,6 +2303,11 @@ body.has-custom-cursor textarea {
   color: var(--ink);
   outline: 0;
   background: transparent;
+}
+
+.auth-field select {
+  width: 100%;
+  cursor: pointer;
 }
 
 .auth-field > div:focus-within {
@@ -2412,6 +2432,22 @@ body.has-custom-cursor textarea {
 
   .auth-panel h1 {
     font-size: 4rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .auth-form-signup {
+    grid-template-columns: 1fr;
+  }
+
+  .auth-form-signup .auth-field {
+    grid-column: 1;
+  }
+
+  .auth-form-signup .auth-submit,
+  .auth-form-signup .auth-switch,
+  .auth-form-signup .auth-form-error {
+    grid-column: 1;
   }
 }
 

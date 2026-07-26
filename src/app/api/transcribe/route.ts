@@ -3,6 +3,7 @@ import { getOpenAIClient } from "@/lib/openai";
 import { scorePronunciationTranscript } from "@/utils/cefr";
 import { getAuthenticatedUserId } from "@/lib/auth-user";
 import { launchLanguages } from "@/lib/languages";
+import { openAIErrorResponse } from "@/lib/openai-error";
 
 export async function POST(req: Request) {
   try {
@@ -23,7 +24,11 @@ export async function POST(req: Request) {
       );
     }
 
-    if (!audioFile.type.startsWith("audio/") || audioFile.size > 10 * 1024 * 1024) {
+    if (
+      audioFile.size === 0 ||
+      !audioFile.type.startsWith("audio/") ||
+      audioFile.size > 10 * 1024 * 1024
+    ) {
       return NextResponse.json(
         { error: "Audio must be a supported file under 10 MB." },
         { status: 400 },
@@ -49,9 +54,6 @@ export async function POST(req: Request) {
     });
   } catch (error) {
     console.error("Transcription error:", error);
-    return NextResponse.json(
-      { error: "Failed to transcribe audio" }, 
-      { status: 500 }
-    );
+    return openAIErrorResponse(error, "transcription");
   }
 }

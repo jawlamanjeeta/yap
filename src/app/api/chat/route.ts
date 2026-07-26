@@ -5,6 +5,7 @@ import { prisma } from "@/lib/prisma";
 import { getAuthenticatedUserId } from "@/lib/auth-user";
 import { isLaunchLanguage } from "@/lib/languages";
 import { recordUserActivity } from "@/lib/activity";
+import { openAIErrorResponse } from "@/lib/openai-error";
 
 type TutorMessage = {
   role: "user" | "assistant";
@@ -94,7 +95,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "A learner message is required." }, { status: 400 });
     }
 
-    const conversation = body.conversationId
+    const existingConversation = body.conversationId
       ? await prisma.conversation.findFirst({
           where: {
             id: body.conversationId,
@@ -102,15 +103,9 @@ export async function POST(req: Request) {
             language: targetLanguage,
           },
         })
-      : await prisma.conversation.create({
-          data: {
-            userId,
-            language: targetLanguage,
-            title: latestUserMessage.content.slice(0, 60),
-          },
-        });
+      : null;
 
-    if (!conversation) {
+    if (body.conversationId && !existingConversation) {
       return NextResponse.json({ error: "Conversation not found." }, { status: 404 });
     }
 
@@ -139,6 +134,15 @@ export async function POST(req: Request) {
     const content = response.choices[0]?.message?.content ?? "";
     const tutor = parseTutorResponse(content);
     const cefr = estimateCefr(latestUserMessage?.content ?? "", tutor.grammarNotes.length);
+    const conversation =
+      existingConversation ??
+      (await prisma.conversation.create({
+        data: {
+          userId,
+          language: targetLanguage,
+          title: latestUserMessage.content.slice(0, 60),
+        },
+      }));
 
     await prisma.$transaction([
       prisma.conversationMessage.create({
@@ -199,9 +203,6 @@ export async function POST(req: Request) {
     });
   } catch (error) {
     console.error("Chat routing error:", error);
-    return NextResponse.json(
-      { error: "Failed to generate AI response." },
-      { status: 500 },
-    );
+    return openAIErrorResponse(error, "chat");
   }
 }

@@ -49,6 +49,15 @@ type TranscribeApiResponse = {
   pronunciation: PronunciationFeedback;
 };
 
+async function getResponseError(response: Response, fallback: string) {
+  try {
+    const payload = (await response.json()) as { error?: unknown };
+    return typeof payload.error === "string" && payload.error.trim() ? payload.error : fallback;
+  } catch {
+    return fallback;
+  }
+}
+
 function openingMessage(language: ReturnType<typeof getLaunchLanguage>): Message {
   return {
     role: "assistant",
@@ -107,7 +116,7 @@ export default function ChatInterface({ initialLanguage }: { initialLanguage: st
       });
 
       if (!response.ok) {
-        throw new Error("The tutor could not answer that turn.");
+        throw new Error(await getResponseError(response, "The tutor could not answer that turn."));
       }
 
       const data = (await response.json()) as TutorApiResponse;
@@ -124,8 +133,9 @@ export default function ChatInterface({ initialLanguage }: { initialLanguage: st
         },
       ]);
     } catch (error) {
-      console.error(error);
-      setErrorMessage("Could not reach the AI tutor. Check your OpenAI key and try again.");
+      setErrorMessage(
+        error instanceof Error ? error.message : "Could not reach the AI tutor. Try again.",
+      );
     } finally {
       setIsProcessing(false);
     }
@@ -153,14 +163,15 @@ export default function ChatInterface({ initialLanguage }: { initialLanguage: st
         });
 
         if (!response.ok) {
-          throw new Error("Transcription failed.");
+          throw new Error(await getResponseError(response, "Transcription failed."));
         }
 
         const data = (await response.json()) as TranscribeApiResponse;
         await submitUtterance(data.text, data.pronunciation);
       } catch (error) {
-        console.error(error);
-        setErrorMessage("Could not transcribe the recording.");
+        setErrorMessage(
+          error instanceof Error ? error.message : "Could not transcribe the recording.",
+        );
       } finally {
         setIsProcessing(false);
       }

@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { ApiError } from "@google/genai";
 import { geminiFlashModel, getGeminiClient } from "@/lib/gemini";
 import { estimateCefr } from "@/utils/cefr";
 import { prisma } from "@/lib/prisma";
@@ -18,6 +19,22 @@ type TutorResponse = {
   grammarNotes: string[];
   suggestedReply: string;
 };
+
+async function retryWhenGeminiIsBusy<T>(request: () => Promise<T>): Promise<T> {
+  for (let attempt = 0; attempt < 2; attempt += 1) {
+    try {
+      return await request();
+    } catch (error) {
+      if (!(error instanceof ApiError) || error.status !== 503 || attempt === 1) {
+        throw error;
+      }
+
+      await new Promise((resolve) => setTimeout(resolve, 800));
+    }
+  }
+
+  throw new Error("Gemini retry loop ended unexpectedly.");
+}
 
 function isTutorMessage(message: unknown): message is TutorMessage {
   if (!message || typeof message !== "object") return false;
@@ -109,7 +126,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Conversation not found." }, { status: 404 });
     }
 
-    const response = await gemini.models.generateContent({
+    const response = await retryWhenGeminiIsBusy(() => gemini.models.generateContent({
       model: geminiFlashModel,
       contents: body.messages.slice(-20).map((message) => ({
         role: message.role === "assistant" ? "model" : "user",
@@ -136,7 +153,7 @@ export async function POST(req: Request) {
           required: ["reply", "correction", "grammarNotes", "suggestedReply"],
         },
       },
-    });
+    }));
 
     const content = response.text ?? "";
     const tutor = parseTutorResponse(content);

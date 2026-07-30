@@ -22,6 +22,20 @@ export function geminiErrorResponse(error: unknown, feature: "chat" | "transcrip
       );
     }
 
+    if (error.status === 404) {
+      return NextResponse.json(
+        { error: "The configured Gemini model is unavailable. Update the app model and try again." },
+        { status: 503 },
+      );
+    }
+
+    if (error.status === 503) {
+      return NextResponse.json(
+        { error: "Gemini is busy right now. Please try that message again in a moment." },
+        { status: 503 },
+      );
+    }
+
     if (error.status === 400) {
       return NextResponse.json(
         { error: feature === "transcription" ? "The recording could not be processed." : fallback },

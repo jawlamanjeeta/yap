@@ -102,12 +102,14 @@ export async function POST(req: Request) {
       );
     }
 
+    const messages = body.messages as TutorMessage[];
+
     const targetLanguage = body.language?.trim() || "Spanish";
     if (!isLaunchLanguage(targetLanguage)) {
       return NextResponse.json({ error: "Unsupported language." }, { status: 400 });
     }
 
-    const latestUserMessage = [...body.messages].reverse().find((message) => message.role === "user");
+    const latestUserMessage = [...messages].reverse().find((message) => message.role === "user");
     if (!latestUserMessage) {
       return NextResponse.json({ error: "A learner message is required." }, { status: 400 });
     }
@@ -128,7 +130,7 @@ export async function POST(req: Request) {
 
     const response = await retryWhenGeminiIsBusy(() => gemini.models.generateContent({
       model: geminiFlashModel,
-      contents: body.messages.slice(-20).map((message) => ({
+      contents: messages.slice(-20).map((message) => ({
         role: message.role === "assistant" ? "model" : "user",
         parts: [{ text: message.content }],
       })),

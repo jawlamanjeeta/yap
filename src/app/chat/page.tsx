@@ -3,9 +3,35 @@ import { ArrowLeft, Sparkles } from "lucide-react";
 import ChatInterface from "@/components/chat/ChatInterface";
 import LogoutButton from "@/components/auth/LogoutButton";
 import { requireUser } from "@/lib/auth-user";
+import { prisma } from "@/lib/prisma";
 
 export default async function ChatPage() {
   const user = await requireUser();
+  const latestConversation = await prisma.conversation.findFirst({
+    where: { userId: user.id },
+    orderBy: { updatedAt: "desc" },
+    include: {
+      messages: {
+        orderBy: { createdAt: "asc" },
+      },
+    },
+  });
+
+  const initialConversation = latestConversation
+    ? {
+        id: latestConversation.id,
+        language: latestConversation.language,
+        messages: latestConversation.messages.map((message) => ({
+          role: message.role === "assistant" ? ("assistant" as const) : ("user" as const),
+          content: message.content,
+          correction: message.correction ?? undefined,
+          grammarNotes: Array.isArray(message.grammarNotes)
+            ? message.grammarNotes.filter((note): note is string => typeof note === "string")
+            : undefined,
+          suggestedReply: message.suggestedReply ?? undefined,
+        })),
+      }
+    : undefined;
 
   return (
     <main className="chat-page">
@@ -28,7 +54,10 @@ export default async function ChatPage() {
             <LogoutButton compact />
           </div>
         </nav>
-        <ChatInterface initialLanguage={user.preferredLanguage} />
+        <ChatInterface
+          initialLanguage={user.preferredLanguage}
+          initialConversation={initialConversation}
+        />
       </div>
     </main>
   );

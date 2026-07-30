@@ -29,6 +29,12 @@ type Message = {
   suggestedReply?: string;
 };
 
+type InitialConversation = {
+  id: string;
+  language: string;
+  messages: Message[];
+};
+
 type PronunciationFeedback = {
   score: number;
   label: string;
@@ -66,12 +72,22 @@ function openingMessage(language: ReturnType<typeof getLaunchLanguage>): Message
   };
 }
 
-export default function ChatInterface({ initialLanguage }: { initialLanguage: string }) {
-  const initialOption = getLaunchLanguage(initialLanguage);
-  const [messages, setMessages] = useState<Message[]>([openingMessage(initialOption)]);
+export default function ChatInterface({
+  initialLanguage,
+  initialConversation,
+}: {
+  initialLanguage: string;
+  initialConversation?: InitialConversation;
+}) {
+  const initialOption = getLaunchLanguage(initialConversation?.language ?? initialLanguage);
+  const [messages, setMessages] = useState<Message[]>(
+    initialConversation?.messages.length
+      ? initialConversation.messages
+      : [openingMessage(initialOption)],
+  );
   const [draft, setDraft] = useState("");
   const [selectedLanguage, setSelectedLanguage] = useState(initialOption);
-  const [conversationId, setConversationId] = useState<string | null>(null);
+  const [conversationId, setConversationId] = useState<string | null>(initialConversation?.id ?? null);
   const [isProcessing, setIsProcessing] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [lastCefr, setLastCefr] = useState<CefrEstimate | null>(null);

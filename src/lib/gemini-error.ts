@@ -1,23 +1,23 @@
-import OpenAI from "openai";
+import { ApiError } from "@google/genai";
 import { NextResponse } from "next/server";
 
-export function openAIErrorResponse(error: unknown, feature: "chat" | "transcription") {
+export function geminiErrorResponse(error: unknown, feature: "chat" | "transcription") {
   const fallback =
     feature === "chat"
       ? "The AI tutor is temporarily unavailable."
       : "Speech transcription is temporarily unavailable.";
 
-  if (error instanceof OpenAI.APIError) {
-    if (error.status === 401) {
+  if (error instanceof ApiError) {
+    if (error.status === 401 || error.status === 403) {
       return NextResponse.json(
-        { error: "The OpenAI API key is invalid or no longer active." },
+        { error: "The Gemini API key is invalid or does not have access to this model." },
         { status: 503 },
       );
     }
 
     if (error.status === 429) {
       return NextResponse.json(
-        { error: "The OpenAI account has reached its current usage limit." },
+        { error: "The Gemini API account has reached its current usage limit." },
         { status: 429 },
       );
     }
@@ -32,12 +32,15 @@ export function openAIErrorResponse(error: unknown, feature: "chat" | "transcrip
     return NextResponse.json({ error: fallback }, { status: 502 });
   }
 
-  if (error instanceof OpenAI.APIConnectionError) {
+  if (error instanceof Error && error.message.includes("GEMINI_API_KEY")) {
     return NextResponse.json(
-      { error: "Could not connect to OpenAI. Check the server network and try again." },
+      { error: "The server is missing its Gemini API key." },
       { status: 503 },
     );
   }
 
-  return NextResponse.json({ error: fallback }, { status: 500 });
+  return NextResponse.json(
+    { error: "Could not connect to Gemini. Check the server network and try again." },
+    { status: 503 },
+  );
 }

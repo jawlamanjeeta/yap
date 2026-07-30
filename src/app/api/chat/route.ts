@@ -1,11 +1,11 @@
 import { NextResponse } from "next/server";
-import { getOpenAIClient } from "@/lib/openai";
+import { geminiFlashModel, getGeminiClient } from "@/lib/gemini";
 import { estimateCefr } from "@/utils/cefr";
 import { prisma } from "@/lib/prisma";
 import { getAuthenticatedUserId } from "@/lib/auth-user";
 import { isLaunchLanguage } from "@/lib/languages";
 import { recordUserActivity } from "@/lib/activity";
-import { openAIErrorResponse } from "@/lib/openai-error";
+import { geminiErrorResponse } from "@/lib/gemini-error";
 
 type TutorMessage = {
   role: "user" | "assistant";
@@ -59,7 +59,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Authentication required." }, { status: 401 });
     }
 
-    const openai = getOpenAIClient();
+    const gemini = getGeminiClient();
     const body = (await req.json()) as {
       messages?: unknown;
       language?: string;
@@ -109,29 +109,36 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Conversation not found." }, { status: 404 });
     }
 
-    const response = await openai.chat.completions.create({
-      model: "gpt-4o",
-      response_format: { type: "json_object" },
-      messages: [
-        {
-          role: "system",
-          content: [
-            `You are a concise ${targetLanguage} conversation tutor.`,
-            "Return only valid JSON with keys: reply, correction, grammarNotes, suggestedReply.",
-            "reply: one natural tutor response in the target language.",
-            "correction: a short English correction of the learner's last message, or 'No major correction.'",
-            "grammarNotes: up to three short English notes.",
-            "suggestedReply: one short learner response in the target language.",
-          ].join(" "),
+    const response = await gemini.models.generateContent({
+      model: geminiFlashModel,
+      contents: body.messages.slice(-20).map((message) => ({
+        role: message.role === "assistant" ? "model" : "user",
+        parts: [{ text: message.content }],
+      })),
+      config: {
+        systemInstruction: [
+          `You are a concise ${targetLanguage} conversation tutor.`,
+          "Return only valid JSON with keys: reply, correction, grammarNotes, suggestedReply.",
+          "reply: one natural tutor response in the target language.",
+          "correction: a short English correction of the learner's last message, or 'No major correction.'",
+          "grammarNotes: up to three short English notes.",
+          "suggestedReply: one short learner response in the target language.",
+        ].join(" "),
+        responseMimeType: "application/json",
+        responseJsonSchema: {
+          type: "object",
+          properties: {
+            reply: { type: "string" },
+            correction: { type: "string" },
+            grammarNotes: { type: "array", items: { type: "string" } },
+            suggestedReply: { type: "string" },
+          },
+          required: ["reply", "correction", "grammarNotes", "suggestedReply"],
         },
-        ...body.messages.slice(-20).map((message) => ({
-          role: message.role,
-          content: message.content,
-        })),
-      ],
+      },
     });
 
-    const content = response.choices[0]?.message?.content ?? "";
+    const content = response.text ?? "";
     const tutor = parseTutorResponse(content);
     const cefr = estimateCefr(latestUserMessage?.content ?? "", tutor.grammarNotes.length);
     const conversation =
@@ -202,7 +209,7 @@ export async function POST(req: Request) {
       cefr,
     });
   } catch (error) {
-    console.error("Chat routing error:", error);
-    return openAIErrorResponse(error, "chat");
+    console.error("Gemini chat routing error:", error);
+    return geminiErrorResponse(error, "chat");
   }
 }

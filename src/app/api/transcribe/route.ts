@@ -1,9 +1,9 @@
 import { NextResponse } from "next/server";
-import { getOpenAIClient } from "@/lib/openai";
+import { geminiFlashModel, getGeminiClient } from "@/lib/gemini";
 import { scorePronunciationTranscript } from "@/utils/cefr";
 import { getAuthenticatedUserId } from "@/lib/auth-user";
 import { launchLanguages } from "@/lib/languages";
-import { openAIErrorResponse } from "@/lib/openai-error";
+import { geminiErrorResponse } from "@/lib/gemini-error";
 
 export async function POST(req: Request) {
   try {
@@ -12,7 +12,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Authentication required." }, { status: 401 });
     }
 
-    const openai = getOpenAIClient();
+    const gemini = getGeminiClient();
     const formData = await req.formData();
     const audioFile = formData.get("file") as File;
     const language = formData.get("language")?.toString();
@@ -42,18 +42,38 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Unsupported language." }, { status: 400 });
     }
 
-    const response = await openai.audio.transcriptions.create({
-      file: audioFile,
-      model: "whisper-1",
-      language,
+    const audioData = Buffer.from(await audioFile.arrayBuffer()).toString("base64");
+    const response = await gemini.models.generateContent({
+      model: geminiFlashModel,
+      contents: [
+        {
+          role: "user",
+          parts: [
+            {
+              inlineData: {
+                mimeType: audioFile.type,
+                data: audioData,
+              },
+            },
+            {
+              text: `Transcribe the spoken ${language ?? "target language"} audio exactly. Return only the transcript with no timestamps, labels, translation, or commentary.`,
+            },
+          ],
+        },
+      ],
     });
 
+    const text = response.text?.trim();
+    if (!text) {
+      return NextResponse.json({ error: "No speech was detected in the recording." }, { status: 422 });
+    }
+
     return NextResponse.json({
-      text: response.text,
-      pronunciation: scorePronunciationTranscript(response.text),
+      text,
+      pronunciation: scorePronunciationTranscript(text),
     });
   } catch (error) {
-    console.error("Transcription error:", error);
-    return openAIErrorResponse(error, "transcription");
+    console.error("Gemini transcription error:", error);
+    return geminiErrorResponse(error, "transcription");
   }
 }

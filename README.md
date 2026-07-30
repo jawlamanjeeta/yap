@@ -1,6 +1,6 @@
 # yap.
 
-Duolingo-style language practice built with Next.js, PostgreSQL, Prisma, OpenAI Whisper, GPT-4o, and browser speech APIs.
+Duolingo-style language practice built with Next.js, PostgreSQL, Prisma, Gemini, and browser speech APIs.
 
 ## What is built
 
@@ -8,8 +8,8 @@ Duolingo-style language practice built with Next.js, PostgreSQL, Prisma, OpenAI 
 - SM-2 flashcard scheduling stored in PostgreSQL through Prisma
 - Voice recording with the MediaRecorder API
 - Live browser transcript with the Web Speech API
-- Whisper transcription endpoint with pronunciation clarity feedback
-- GPT-4o tutor endpoint with grammar correction, suggested replies, and CEFR-style fluency estimates
+- Gemini audio transcription with pronunciation clarity feedback
+- Gemini tutor with grammar correction, suggested replies, and CEFR-style fluency estimates
 - Auth.js credential accounts with hashed passwords and protected learning routes
 - User-owned review history, conversations, language enrollments, activity, XP, and streak data
 
@@ -19,7 +19,7 @@ Create `.env.local` from `.env.example` and provide:
 
 ```bash
 DATABASE_URL=""
-OPENAI_API_KEY=""
+GEMINI_API_KEY=""
 AUTH_SECRET=""
 ```
 

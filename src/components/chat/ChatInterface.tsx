@@ -365,7 +365,7 @@ export default function ChatInterface({ initialLanguage }: { initialLanguage: st
             </div>
           ) : (
             <p className="chat-panel-empty">
-              Record a response to get Whisper-based clarity feedback.
+              Record a response to get Gemini-based clarity feedback.
             </p>
           )}
         </Panel>

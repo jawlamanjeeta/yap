@@ -94,10 +94,13 @@ export default function ChatInterface({
   const [lastPronunciation, setLastPronunciation] = useState<PronunciationFeedback | null>(null);
   const [pendingPronunciation, setPendingPronunciation] = useState<PronunciationFeedback | null>(null);
   const messagesRef = useRef<HTMLDivElement>(null);
+  const composerInputRef = useRef<HTMLInputElement>(null);
+  const wasMicActiveRef = useRef(false);
 
   const { isRecording, startRecording, stopRecording, error } = useAudioRecorder();
   const speechRecognition = useSpeechRecognition(selectedLanguage.speechCode);
   const { isSpeaking, speak } = useTTS(selectedLanguage.speechCode);
+  const isMicActive = isRecording || speechRecognition.isListening;
 
   useEffect(() => {
     const messagePane = messagesRef.current;
@@ -114,6 +117,14 @@ export default function ChatInterface({
       setDraft(speechRecognition.transcript);
     }
   }, [speechRecognition.isListening, speechRecognition.transcript]);
+
+  useEffect(() => {
+    if (wasMicActiveRef.current && !isMicActive) {
+      requestAnimationFrame(() => composerInputRef.current?.focus());
+    }
+
+    wasMicActiveRef.current = isMicActive;
+  }, [isMicActive]);
 
   const submitUtterance = async (text: string, pronunciation = pendingPronunciation ?? undefined) => {
     const trimmed = text.trim();
@@ -166,8 +177,6 @@ export default function ChatInterface({
   };
 
   const handleToggleRecord = async () => {
-    const isMicActive = isRecording || speechRecognition.isListening;
-
     if (isMicActive) {
       speechRecognition.stopListening();
 
@@ -224,7 +233,6 @@ export default function ChatInterface({
   };
 
   const latestAssistant = [...messages].reverse().find((message) => message.role === "assistant");
-  const isMicActive = isRecording || speechRecognition.isListening;
 
   return (
     <div className="chat-studio" data-language={selectedLanguage.whisperCode}>
@@ -344,6 +352,7 @@ export default function ChatInterface({
           <label>
             <span>{isMicActive ? "Listening..." : `Your turn in ${selectedLanguage.label}`}</span>
             <input
+              ref={composerInputRef}
               value={draft}
               onChange={(event) => setDraft(event.target.value)}
               placeholder="Type a sentence or use the microphone"

@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { getAuthenticatedUserId } from "@/lib/auth-user";
+import { getLaunchLanguage, isLaunchLanguage } from "@/lib/languages";
 import { prisma } from "@/lib/prisma";
 
 export async function GET() {
@@ -38,4 +39,38 @@ export async function GET() {
       lastMessage: conversation.messages[0]?.content ?? null,
     })),
   });
+}
+
+export async function POST(req: Request) {
+  const userId = await getAuthenticatedUserId();
+  if (!userId) {
+    return NextResponse.json({ error: "Authentication required." }, { status: 401 });
+  }
+
+  const body = (await req.json()) as { language?: unknown };
+  if (typeof body.language !== "string" || !isLaunchLanguage(body.language)) {
+    return NextResponse.json({ error: "Unsupported language." }, { status: 400 });
+  }
+
+  const language = getLaunchLanguage(body.language);
+  const conversation = await prisma.conversation.create({
+    data: {
+      userId,
+      language: language.label,
+      messages: {
+        create: {
+          role: "assistant",
+          content: language.greeting,
+          suggestedReply: language.suggestedReply,
+        },
+      },
+    },
+    include: {
+      messages: {
+        orderBy: { createdAt: "asc" },
+      },
+    },
+  });
+
+  return NextResponse.json({ conversation }, { status: 201 });
 }

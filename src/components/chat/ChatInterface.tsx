@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { FormEvent, useEffect, useRef, useState } from "react";
+import { FormEvent, useCallback, useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import {
   Gauge,
@@ -110,9 +110,12 @@ export default function ChatInterface({
   const [pendingPronunciation, setPendingPronunciation] = useState<PronunciationFeedback | null>(null);
   const [historyOpen, setHistoryOpen] = useState(false);
   const [isHistoryLoading, setIsHistoryLoading] = useState(false);
+  const [isCreatingConversation, setIsCreatingConversation] = useState(false);
+  const [conversationSummaries, setConversationSummaries] = useState(recentConversations);
   const messagesRef = useRef<HTMLDivElement>(null);
   const composerInputRef = useRef<HTMLInputElement>(null);
   const wasMicActiveRef = useRef(false);
+  const hasCreatedInitialConversationRef = useRef(false);
 
   const { isRecording, startRecording, stopRecording, error } = useAudioRecorder();
   const speechRecognition = useSpeechRecognition(selectedLanguage.speechCode);
@@ -249,8 +252,9 @@ export default function ChatInterface({
     await submitUtterance(draft);
   };
 
-  const startNewConversation = () => {
-    setMessages([openingMessage(selectedLanguage)]);
+  const startNewConversation = useCallback(async (language = selectedLanguage) => {
+    setSelectedLanguage(language);
+    setMessages([openingMessage(language)]);
     setConversationId(null);
     setLastCefr(null);
     setLastPronunciation(null);
@@ -258,8 +262,47 @@ export default function ChatInterface({
     setDraft("");
     setErrorMessage(null);
     setHistoryOpen(false);
-    requestAnimationFrame(() => composerInputRef.current?.focus());
-  };
+    setIsCreatingConversation(true);
+
+    try {
+      const response = await fetch("/api/conversations", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ language: language.label }),
+      });
+
+      if (!response.ok) {
+        throw new Error(await getResponseError(response, "Could not start a new conversation."));
+      }
+
+      const data = (await response.json()) as ConversationDetailResponse;
+      setMessages(data.conversation.messages);
+      setConversationId(data.conversation.id);
+      setConversationSummaries((current) => [
+        {
+          id: data.conversation.id,
+          language: data.conversation.language,
+          title: null,
+          lastMessage: data.conversation.messages.at(-1)?.content ?? null,
+        },
+        ...current.filter((conversation) => conversation.id !== data.conversation.id),
+      ]);
+      requestAnimationFrame(() => composerInputRef.current?.focus());
+    } catch (error) {
+      setErrorMessage(
+        error instanceof Error ? error.message : "Could not start a new conversation.",
+      );
+    } finally {
+      setIsCreatingConversation(false);
+    }
+  }, [selectedLanguage]);
+
+  useEffect(() => {
+    if (!initialConversation && !hasCreatedInitialConversationRef.current) {
+      hasCreatedInitialConversationRef.current = true;
+      void startNewConversation(initialOption);
+    }
+  }, [initialConversation, initialOption, startNewConversation]);
 
   const resumeConversation = async (id: string) => {
     if (id === conversationId) {
@@ -323,9 +366,9 @@ export default function ChatInterface({
               {historyOpen && (
                 <div className="chat-history-menu" role="dialog" aria-label="Conversation history">
                   <p>Recent conversations</p>
-                  {recentConversations.length ? (
+                  {conversationSummaries.length ? (
                     <div>
-                      {recentConversations.map((conversation) => (
+                      {conversationSummaries.map((conversation) => (
                         <button
                           key={conversation.id}
                           type="button"
@@ -346,12 +389,13 @@ export default function ChatInterface({
             </div>
             <button
               type="button"
-              onClick={startNewConversation}
+              onClick={() => void startNewConversation()}
               className="chat-header-icon"
               aria-label="Start a new conversation"
               title="Start a new conversation"
+              disabled={isCreatingConversation}
             >
-              <Plus aria-hidden="true" />
+              {isCreatingConversation ? <Loader2 aria-hidden="true" /> : <Plus aria-hidden="true" />}
             </button>
             <label className="chat-language-select">
               <span>Practicing</span>
@@ -359,14 +403,7 @@ export default function ChatInterface({
                 value={selectedLanguage.label}
                 onChange={(event) => {
                   const option = getLaunchLanguage(event.target.value);
-                  setSelectedLanguage(option);
-                  setMessages([openingMessage(option)]);
-                  setConversationId(null);
-                  setLastCefr(null);
-                  setLastPronunciation(null);
-                  setPendingPronunciation(null);
-                  setDraft("");
-                  setHistoryOpen(false);
+                  void startNewConversation(option);
                 }}
                 aria-label="Target language"
               >

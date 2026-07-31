@@ -92,6 +92,7 @@ export default function ChatInterface({
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [lastCefr, setLastCefr] = useState<CefrEstimate | null>(null);
   const [lastPronunciation, setLastPronunciation] = useState<PronunciationFeedback | null>(null);
+  const [pendingPronunciation, setPendingPronunciation] = useState<PronunciationFeedback | null>(null);
   const messagesRef = useRef<HTMLDivElement>(null);
 
   const { isRecording, startRecording, stopRecording, error } = useAudioRecorder();
@@ -108,13 +109,20 @@ export default function ChatInterface({
     });
   }, [messages]);
 
-  const submitUtterance = async (text: string, pronunciation?: PronunciationFeedback) => {
+  useEffect(() => {
+    if (speechRecognition.isListening) {
+      setDraft(speechRecognition.transcript);
+    }
+  }, [speechRecognition.isListening, speechRecognition.transcript]);
+
+  const submitUtterance = async (text: string, pronunciation = pendingPronunciation ?? undefined) => {
     const trimmed = text.trim();
     if (!trimmed) return;
 
     const nextMessages: Message[] = [...messages, { role: "user", content: trimmed }];
     setMessages(nextMessages);
     setDraft("");
+    setPendingPronunciation(null);
     setLastPronunciation(pronunciation ?? null);
     setErrorMessage(null);
     setIsProcessing(true);
@@ -158,16 +166,21 @@ export default function ChatInterface({
   };
 
   const handleToggleRecord = async () => {
-    if (isRecording) {
-      setIsProcessing(true);
+    const isMicActive = isRecording || speechRecognition.isListening;
+
+    if (isMicActive) {
       speechRecognition.stopListening();
 
-      const audioBlob = await stopRecording();
-      if (!audioBlob) {
-        setIsProcessing(false);
+      if (speechRecognition.isSupported) {
         return;
       }
 
+      const audioBlob = await stopRecording();
+      if (!audioBlob) {
+        return;
+      }
+
+      setIsProcessing(true);
       try {
         const formData = new FormData();
         formData.append("file", audioBlob, "speech.webm");
@@ -183,7 +196,9 @@ export default function ChatInterface({
         }
 
         const data = (await response.json()) as TranscribeApiResponse;
-        await submitUtterance(data.text, data.pronunciation);
+        setDraft(data.text);
+        setPendingPronunciation(data.pronunciation);
+        setLastPronunciation(data.pronunciation);
       } catch (error) {
         setErrorMessage(
           error instanceof Error ? error.message : "Could not transcribe the recording.",
@@ -195,10 +210,12 @@ export default function ChatInterface({
       return;
     }
 
-    await startRecording();
     if (speechRecognition.isSupported) {
       speechRecognition.startListening();
+      return;
     }
+
+    await startRecording();
   };
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
@@ -207,6 +224,7 @@ export default function ChatInterface({
   };
 
   const latestAssistant = [...messages].reverse().find((message) => message.role === "assistant");
+  const isMicActive = isRecording || speechRecognition.isListening;
 
   return (
     <div className="chat-studio" data-language={selectedLanguage.whisperCode}>
@@ -283,6 +301,19 @@ export default function ChatInterface({
             ))}
           </AnimatePresence>
 
+          {isMicActive && speechRecognition.transcript && (
+            <motion.article
+              className="chat-message chat-message-user chat-message-live"
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 0.72, y: 0 }}
+            >
+              <div className="chat-message-label">you, live</div>
+              <div className="chat-message-paper">
+                <p>{speechRecognition.transcript}</p>
+              </div>
+            </motion.article>
+          )}
+
           {isProcessing && (
             <div className="chat-thinking">
               <Loader2 aria-hidden="true" />
@@ -291,11 +322,8 @@ export default function ChatInterface({
           )}
         </div>
 
-        {(speechRecognition.transcript || errorMessage || error) && (
+        {(errorMessage || error) && (
           <div className="chat-live-status">
-            {speechRecognition.transcript && (
-              <p><strong>Live transcript</strong>{speechRecognition.transcript}</p>
-            )}
             {(errorMessage || error) && (
               <p className="chat-error">{errorMessage || error}</p>
             )}
@@ -306,15 +334,15 @@ export default function ChatInterface({
           <button
             type="button"
             onClick={handleToggleRecord}
-            disabled={isProcessing && !isRecording}
-            className={`chat-record ${isRecording ? "is-recording" : ""}`}
-            aria-label={isRecording ? "Stop recording" : "Start recording"}
-            title={isRecording ? "Stop recording" : "Start recording"}
+            disabled={isProcessing && !isMicActive}
+            className={`chat-record ${isMicActive ? "is-recording" : ""}`}
+            aria-label={isMicActive ? "Stop recording" : "Start recording"}
+            title={isMicActive ? "Stop recording" : "Start recording"}
           >
-            {isRecording ? <Square aria-hidden="true" /> : <Mic aria-hidden="true" />}
+            {isMicActive ? <Square aria-hidden="true" /> : <Mic aria-hidden="true" />}
           </button>
           <label>
-            <span>{isRecording ? "Listening..." : `Your turn in ${selectedLanguage.label}`}</span>
+            <span>{isMicActive ? "Listening..." : `Your turn in ${selectedLanguage.label}`}</span>
             <input
               value={draft}
               onChange={(event) => setDraft(event.target.value)}

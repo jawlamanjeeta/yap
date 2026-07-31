@@ -7,15 +7,33 @@ import { prisma } from "@/lib/prisma";
 
 export default async function ChatPage() {
   const user = await requireUser();
-  const latestConversation = await prisma.conversation.findFirst({
-    where: { userId: user.id },
-    orderBy: { updatedAt: "desc" },
-    include: {
-      messages: {
-        orderBy: { createdAt: "asc" },
+  const [latestConversation, recentConversations] = await Promise.all([
+    prisma.conversation.findFirst({
+      where: { userId: user.id },
+      orderBy: { updatedAt: "desc" },
+      include: {
+        messages: {
+          orderBy: { createdAt: "asc" },
+        },
       },
-    },
-  });
+    }),
+    prisma.conversation.findMany({
+      where: { userId: user.id },
+      orderBy: { updatedAt: "desc" },
+      take: 20,
+      select: {
+        id: true,
+        language: true,
+        title: true,
+        updatedAt: true,
+        messages: {
+          orderBy: { createdAt: "desc" },
+          take: 1,
+          select: { content: true },
+        },
+      },
+    }),
+  ]);
 
   const initialConversation = latestConversation
     ? {
@@ -57,6 +75,12 @@ export default async function ChatPage() {
         <ChatInterface
           initialLanguage={user.preferredLanguage}
           initialConversation={initialConversation}
+          recentConversations={recentConversations.map((conversation) => ({
+            id: conversation.id,
+            language: conversation.language,
+            title: conversation.title,
+            lastMessage: conversation.messages[0]?.content ?? null,
+          }))}
         />
       </div>
     </main>

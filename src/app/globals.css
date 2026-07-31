@@ -3180,6 +3180,107 @@ body.has-custom-cursor textarea {
   gap: 0.3rem;
 }
 
+.chat-header-actions {
+  display: flex;
+  align-items: end;
+  justify-content: end;
+  gap: 0.55rem;
+}
+
+.chat-history-wrap {
+  position: relative;
+}
+
+.chat-header-icon {
+  display: inline-grid;
+  width: 2.55rem;
+  height: 2.55rem;
+  place-items: center;
+  border: 1px solid var(--ink);
+  color: var(--ink);
+  background: var(--paper-bright);
+  box-shadow: 0.2rem 0.25rem 0 var(--ink);
+  cursor: pointer;
+}
+
+.chat-header-icon:hover,
+.chat-header-icon:focus-visible {
+  color: var(--paper-bright);
+  outline: 0;
+  background: var(--chat-accent);
+}
+
+.chat-header-icon svg {
+  width: 1rem;
+  height: 1rem;
+}
+
+.chat-history-menu {
+  position: absolute;
+  z-index: 4;
+  top: calc(100% + 0.7rem);
+  right: 0;
+  width: min(20rem, calc(100vw - 3rem));
+  max-height: 23rem;
+  overflow-y: auto;
+  border: 1px solid var(--ink);
+  padding: 0.65rem;
+  background: var(--paper-bright);
+  box-shadow: 0.45rem 0.5rem 0 var(--chat-soft);
+}
+
+.chat-history-menu > p {
+  margin: 0 0 0.55rem;
+  color: var(--chat-accent);
+  font-size: 0.58rem;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.chat-history-menu > div {
+  display: grid;
+  gap: 0.45rem;
+}
+
+.chat-history-menu button {
+  display: grid;
+  width: 100%;
+  gap: 0.18rem;
+  border: 1px solid var(--ink);
+  padding: 0.6rem;
+  color: var(--ink);
+  text-align: left;
+  background: var(--paper);
+  cursor: pointer;
+}
+
+.chat-history-menu button:hover,
+.chat-history-menu button:focus-visible,
+.chat-history-menu button.is-active {
+  outline: 0;
+  background: var(--chat-soft);
+}
+
+.chat-history-menu button span,
+.chat-history-menu button small {
+  overflow: hidden;
+  font-size: 0.58rem;
+  font-weight: 800;
+  line-height: 1.25;
+  text-overflow: ellipsis;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.chat-history-menu button strong {
+  overflow: hidden;
+  font-family: var(--font-display);
+  font-size: 0.94rem;
+  line-height: 1.1;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .chat-language-select span {
   font-size: 0.55rem;
   font-weight: 900;

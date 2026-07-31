@@ -6,9 +6,11 @@ import { AnimatePresence, motion } from "framer-motion";
 import {
   Gauge,
   Headphones,
+  History,
   Loader2,
   MessageCircleMore,
   Mic,
+  Plus,
   Send,
   Sparkles,
   Square,
@@ -33,6 +35,17 @@ type InitialConversation = {
   id: string;
   language: string;
   messages: Message[];
+};
+
+type ConversationSummary = {
+  id: string;
+  language: string;
+  title: string | null;
+  lastMessage: string | null;
+};
+
+type ConversationDetailResponse = {
+  conversation: InitialConversation;
 };
 
 type PronunciationFeedback = {
@@ -75,9 +88,11 @@ function openingMessage(language: ReturnType<typeof getLaunchLanguage>): Message
 export default function ChatInterface({
   initialLanguage,
   initialConversation,
+  recentConversations,
 }: {
   initialLanguage: string;
   initialConversation?: InitialConversation;
+  recentConversations: ConversationSummary[];
 }) {
   const initialOption = getLaunchLanguage(initialConversation?.language ?? initialLanguage);
   const [messages, setMessages] = useState<Message[]>(
@@ -93,6 +108,8 @@ export default function ChatInterface({
   const [lastCefr, setLastCefr] = useState<CefrEstimate | null>(null);
   const [lastPronunciation, setLastPronunciation] = useState<PronunciationFeedback | null>(null);
   const [pendingPronunciation, setPendingPronunciation] = useState<PronunciationFeedback | null>(null);
+  const [historyOpen, setHistoryOpen] = useState(false);
+  const [isHistoryLoading, setIsHistoryLoading] = useState(false);
   const messagesRef = useRef<HTMLDivElement>(null);
   const composerInputRef = useRef<HTMLInputElement>(null);
   const wasMicActiveRef = useRef(false);
@@ -232,6 +249,52 @@ export default function ChatInterface({
     await submitUtterance(draft);
   };
 
+  const startNewConversation = () => {
+    setMessages([openingMessage(selectedLanguage)]);
+    setConversationId(null);
+    setLastCefr(null);
+    setLastPronunciation(null);
+    setPendingPronunciation(null);
+    setDraft("");
+    setErrorMessage(null);
+    setHistoryOpen(false);
+    requestAnimationFrame(() => composerInputRef.current?.focus());
+  };
+
+  const resumeConversation = async (id: string) => {
+    if (id === conversationId) {
+      setHistoryOpen(false);
+      return;
+    }
+
+    setIsHistoryLoading(true);
+    setErrorMessage(null);
+
+    try {
+      const response = await fetch(`/api/conversations/${id}`);
+      if (!response.ok) {
+        throw new Error(await getResponseError(response, "Could not load that conversation."));
+      }
+
+      const data = (await response.json()) as ConversationDetailResponse;
+      const language = getLaunchLanguage(data.conversation.language);
+      setSelectedLanguage(language);
+      setMessages(data.conversation.messages);
+      setConversationId(data.conversation.id);
+      setLastCefr(null);
+      setLastPronunciation(null);
+      setPendingPronunciation(null);
+      setDraft("");
+      setHistoryOpen(false);
+    } catch (error) {
+      setErrorMessage(
+        error instanceof Error ? error.message : "Could not load that conversation.",
+      );
+    } finally {
+      setIsHistoryLoading(false);
+    }
+  };
+
   const latestAssistant = [...messages].reverse().find((message) => message.role === "assistant");
 
   return (
@@ -245,28 +308,76 @@ export default function ChatInterface({
             </p>
             <h1>Say something real.</h1>
           </div>
-          <label className="chat-language-select">
-            <span>Practicing</span>
-            <select
-              value={selectedLanguage.label}
-              onChange={(event) => {
-                const option = getLaunchLanguage(event.target.value);
-                setSelectedLanguage(option);
-                setMessages([openingMessage(option)]);
-                setConversationId(null);
-                setLastCefr(null);
-                setLastPronunciation(null);
-                setDraft("");
-              }}
-              aria-label="Target language"
+          <div className="chat-header-actions">
+            <div className="chat-history-wrap">
+              <button
+                type="button"
+                onClick={() => setHistoryOpen((open) => !open)}
+                className="chat-header-icon"
+                aria-label="Conversation history"
+                title="Conversation history"
+                aria-expanded={historyOpen}
+              >
+                {isHistoryLoading ? <Loader2 aria-hidden="true" /> : <History aria-hidden="true" />}
+              </button>
+              {historyOpen && (
+                <div className="chat-history-menu" role="dialog" aria-label="Conversation history">
+                  <p>Recent conversations</p>
+                  {recentConversations.length ? (
+                    <div>
+                      {recentConversations.map((conversation) => (
+                        <button
+                          key={conversation.id}
+                          type="button"
+                          onClick={() => void resumeConversation(conversation.id)}
+                          className={conversation.id === conversationId ? "is-active" : ""}
+                        >
+                          <span>{conversation.language}</span>
+                          <strong>{conversation.title || "Untitled conversation"}</strong>
+                          {conversation.lastMessage && <small>{conversation.lastMessage}</small>}
+                        </button>
+                      ))}
+                    </div>
+                  ) : (
+                    <small>No saved conversations yet.</small>
+                  )}
+                </div>
+              )}
+            </div>
+            <button
+              type="button"
+              onClick={startNewConversation}
+              className="chat-header-icon"
+              aria-label="Start a new conversation"
+              title="Start a new conversation"
             >
-              {launchLanguages.map((language) => (
-                <option key={language.label} value={language.label}>
-                  {language.label}
-                </option>
-              ))}
-            </select>
-          </label>
+              <Plus aria-hidden="true" />
+            </button>
+            <label className="chat-language-select">
+              <span>Practicing</span>
+              <select
+                value={selectedLanguage.label}
+                onChange={(event) => {
+                  const option = getLaunchLanguage(event.target.value);
+                  setSelectedLanguage(option);
+                  setMessages([openingMessage(option)]);
+                  setConversationId(null);
+                  setLastCefr(null);
+                  setLastPronunciation(null);
+                  setPendingPronunciation(null);
+                  setDraft("");
+                  setHistoryOpen(false);
+                }}
+                aria-label="Target language"
+              >
+                {launchLanguages.map((language) => (
+                  <option key={language.label} value={language.label}>
+                    {language.label}
+                  </option>
+                ))}
+              </select>
+            </label>
+          </div>
         </header>
 
         <div ref={messagesRef} className="chat-messages">

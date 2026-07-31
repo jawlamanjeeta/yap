@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { getAuthenticatedUserId } from "@/lib/auth-user";
+import { findConversationForUser } from "@/lib/conversation-access";
 import { prisma } from "@/lib/prisma";
 
 export async function GET(
@@ -12,8 +13,9 @@ export async function GET(
   }
 
   const { conversationId } = await params;
-  const conversation = await prisma.conversation.findFirst({
-    where: { id: conversationId, userId },
+  const conversation = await findConversationForUser(
+    (query) => prisma.conversation.findFirst({
+      ...query,
     include: {
       messages: {
         orderBy: { createdAt: "asc" },
@@ -33,7 +35,10 @@ export async function GET(
         },
       },
     },
-  });
+    }),
+    userId,
+    conversationId,
+  );
 
   if (!conversation) {
     return NextResponse.json({ error: "Conversation not found." }, { status: 404 });

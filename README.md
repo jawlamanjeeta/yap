@@ -1,140 +1,155 @@
-# yap.
+<div align="center">
 
-Duolingo-style language practice built with Next.js, PostgreSQL, Prisma, Gemini, and browser speech APIs.
+# 🗣️ yap.
+### *The intelligent, voice-first AI language tutor that listens, speaks, and adapts.*
 
-## What is built
+[![Live Demo](https://img.shields.io/badge/Live%20Demo-yap--alpha--jet.vercel.app-000000?style=for-the-badge&logo=vercel&logoColor=white)](https://yap-alpha-jet.vercel.app)
+[![Next.js](https://img.shields.io/badge/Next.js%2016-black?style=for-the-badge&logo=next.js&logoColor=white)](https://nextjs.org/)
+[![React](https://img.shields.io/badge/React%2019-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)](https://react.dev/)
+[![TypeScript](https://img.shields.io/badge/TypeScript%205-007ACC?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![Neon](https://img.shields.io/badge/Neon-PostgreSQL-00E599?style=for-the-badge&logo=postgresql&logoColor=white)](https://neon.tech/)
+[![Prisma](https://img.shields.io/badge/Prisma%20ORM-2D3748?style=for-the-badge&logo=prisma&logoColor=white)](https://www.prisma.io/)
+[![Google Gemini](https://img.shields.io/badge/Google%20Gemini-8E75C2?style=for-the-badge&logo=googlegemini&logoColor=white)](https://ai.google.dev/)
 
-- App dashboard with due-card stats, five starter decks, XP, and speaking-practice entry point
-- SM-2 flashcard scheduling stored in PostgreSQL through Prisma
-- Voice recording with the MediaRecorder API
-- Live browser transcript with the Web Speech API
-- Gemini audio transcription with pronunciation clarity feedback
-- Gemini tutor with grammar correction, suggested replies, and CEFR-style fluency estimates
-- Auth.js credential accounts with hashed passwords and protected learning routes
-- User-owned review history, conversations, language enrollments, activity, XP, and streak data
+[Explore the Live App](https://yap-alpha-jet.vercel.app) · [Report Bug](https://github.com/jawlamanjeeta/yap/issues) · [Request Feature](https://github.com/jawlamanjeeta/yap/issues)
 
-## Setup
+</div>
 
-Create `.env.local` from `.env.example` and provide:
+---
 
+## ⚡ Overview
+
+**yap.** bridges the gap between passive flashcard memorization and spontaneous conversational fluency. Combining the power of **Google Gemini**, the **SuperMemo SM-2 spaced repetition algorithm**, and interactive speech interfaces, yap provides an immersive, gamified language learning experience.
+
+Whether practicing spoken Spanish, refining German grammar, or mastering Japanese vocabulary, yap listens in real-time, corrects syntax gently, and measures fluency progress against CEFR standards.
+
+---
+
+## ✨ Key Features
+
+### 🎙️ Voice-First Conversational AI Tutor
+* **Interactive Dialogue**: Engage in turn-by-turn conversations in 5 launch languages (English, Spanish, French, German, Japanese).
+* **Instant Speech Feedback**: Dual audio pipeline utilizing the Web Speech API and Google Gemini for real-time transcription, audio analysis, and pronunciation clarity scoring.
+* **Smart Grammar Corrections**: Real-time, contextual sentence restructuring without breaking conversational flow.
+* **CEFR Fluency Tracking**: Dynamic CEFR score (A1 to C2) calculated dynamically based on vocabulary range and grammatical complexity.
+
+### 🧠 Intelligent Spaced Repetition (SM-2)
+* **Algorithm-Driven Retention**: Uses the proven SuperMemo SM-2 algorithm to optimize review intervals and ease factors based on recall quality.
+* **Starter Decks Included**: Instant access to curated beginner-to-intermediate decks across all supported languages.
+* **Due Date Tracking**: Automated scheduling preventing cramming and maximizing long-term memory retention.
+
+### 🎮 Gamified Learning Experience
+* **XP & Streak Mechanics**: Earn experience points for active review sessions and conversational turns.
+* **Daily Activity Matrix**: Tracks study consistency, message volume, and cards reviewed per calendar day.
+* **3D Animated Mascots**: Immersive visual feedback driven by React Three Fiber (`@react-three/fiber`), Three.js, and GSAP.
+
+---
+
+## 🛠️ Tech Stack
+
+| Layer | Technologies |
+|---|---|
+| **Frontend** | Next.js 16 (App Router, Turbopack), React 19, Tailwind CSS, Lucide Icons |
+| **Animation & 3D** | Three.js, React Three Fiber, Drei, GSAP, Framer Motion |
+| **Backend & APIs** | Next.js Server Actions, Route Handlers, Node.js v22 |
+| **AI & Voice** | Google Gemini API (`@google/genai`), Web Speech API, MediaRecorder API |
+| **Database & ORM** | Neon Serverless PostgreSQL (with PgBouncer pooling), Prisma ORM v6 |
+| **Authentication** | Auth.js (NextAuth v5 beta), JWT Sessions, bcryptjs |
+| **Deployment** | Vercel (Edge & Serverless compute) |
+
+---
+
+## 🚀 Live Demo Credentials
+
+Experience the platform immediately without creating a new account:
+
+* **URL**: [https://yap-alpha-jet.vercel.app/login](https://yap-alpha-jet.vercel.app/login)
+* **Email**: `recruiter@faang.com`
+* **Password**: `DemoPassword123!`
+
+*(Includes pre-seeded review schedules, enrolled languages, and activity history).*
+
+---
+
+## 💻 Getting Started Locally
+
+### Prerequisites
+* **Node.js** (v20+ recommended)
+* **PostgreSQL** (local instance or cloud database like [Neon](https://neon.tech))
+* **Google Gemini API Key** from [Google AI Studio](https://aistudio.google.com/)
+
+### 1. Clone the Repository
 ```bash
-DATABASE_URL=""
-GEMINI_API_KEY=""
-AUTH_SECRET=""
+git clone https://github.com/jawlamanjeeta/yap.git
+cd yap
 ```
 
-Then prepare the database and run the app:
-
+### 2. Install Dependencies
 ```bash
 npm install
-npm run db:push
+```
+
+### 3. Environment Variables
+Create a `.env.local` file in the root directory:
+
+```env
+# Database (PostgreSQL / Neon)
+DATABASE_URL="postgresql://USER:PASSWORD@HOST:PORT/DATABASE?sslmode=require"
+DATABASE_URL_UNPOOLED="postgresql://USER:PASSWORD@HOST:PORT/DATABASE?sslmode=require"
+
+# AI Integration
+GEMINI_API_KEY="your-gemini-api-key"
+
+# Authentication (Generate with: npx auth secret)
+AUTH_SECRET="your-generated-auth-secret"
+```
+
+### 4. Database Setup & Seeding
+Push the schema to your database and populate starter decks and demo accounts:
+
+```bash
+# Push schema tables
+npx prisma db push
+
+# Seed starter decks, cards, and demo user
 npm run db:seed
+```
+
+### 5. Launch the Development Server
+```bash
 npm run dev
 ```
 
-Generate a strong `AUTH_SECRET` before running the app. The seeded demo account is:
+Open [http://localhost:3000](http://localhost:3000) with your browser.
+
+---
+
+## 📁 Project Structure
 
 ```text
-Email: recruiter@faang.com
-Password: DemoPassword123!
+yap/
+├── prisma/
+│   ├── schema.prisma       # Database schema & relations
+│   ├── seed.ts             # Starter decks & mock user seeding
+│   └── starter-decks.ts    # Curated language decks (ES, FR, DE, JA, EN)
+├── src/
+│   ├── actions/            # Server actions (Auth, Flashcard reviews)
+│   ├── app/                # Next.js App Router (pages & API routes)
+│   │   ├── (auth)/         # Login & Signup flows
+│   │   ├── api/chat/       # Gemini conversation & grammar endpoint
+│   │   ├── api/transcribe/ # Speech transcription & pronunciation analysis
+│   │   ├── chat/           # Live voice/text conversational UI
+│   │   └── study/[id]/     # Flashcard review interface with SM-2 controls
+│   ├── components/         # Reusable React components (3D Mascot, Chat, Cards)
+│   ├── hooks/              # Custom hooks (AudioRecorder, SpeechRecognition, TTS)
+│   ├── lib/                # Prisma client, Gemini SDK client, Auth helpers
+│   └── utils/              # SM-2 algorithm & CEFR scoring utilities
+├── neon.ts                 # Neon cloud architecture configuration
+└── tailwind.config.ts      # Styling design system
 ```
 
-The repeatable seed preserves existing users and creates ten starter cards each for English,
-French, Spanish, German, and Japanese. The demo account can try the full review and speaking loop.
+---
 
-```
-yap
-├─ .agents
-├─ .prettierrc
-├─ auth.config.ts
-├─ auth.ts
-├─ eslint.config.mjs
-├─ next.config.mjs
-├─ package-lock.json
-├─ package.json
-├─ postcss.config.mjs
-├─ prisma
-│  ├─ migrations
-│  │  ├─ 20260724130000_phase_1_authentication
-│  │  │  └─ migration.sql
-│  │  └─ migration_lock.toml
-│  ├─ schema.prisma
-│  ├─ seed.ts
-│  └─ starter-decks.ts
-├─ prisma.config.ts
-├─ proxy.ts
-├─ public
-│  ├─ favicon.ico
-│  ├─ yap-hero-mascot-stickers.png
-│  └─ yap-hero-mascot.png
-├─ README.md
-├─ scripts
-├─ src
-│  ├─ actions
-│  │  ├─ auth.actions.ts
-│  │  └─ flashcard.actions.ts
-│  ├─ app
-│  │  ├─ (auth)
-│  │  │  ├─ login
-│  │  │  │  └─ page.tsx
-│  │  │  └─ signup
-│  │  │     └─ page.tsx
-│  │  ├─ api
-│  │  │  ├─ auth
-│  │  │  ├─ chat
-│  │  │  │  └─ route.ts
-│  │  │  └─ transcribe
-│  │  │     └─ route.ts
-│  │  ├─ chat
-│  │  │  └─ page.tsx
-│  │  ├─ error.tsx
-│  │  ├─ globals.css
-│  │  ├─ layout.tsx
-│  │  ├─ loading.tsx
-│  │  ├─ not-found.tsx
-│  │  ├─ page.tsx
-│  │  └─ study
-│  │     └─ [id]
-│  │        └─ page.tsx
-│  ├─ components
-│  │  ├─ auth
-│  │  │  ├─ AuthForm.tsx
-│  │  │  ├─ AuthShell.tsx
-│  │  │  └─ LogoutButton.tsx
-│  │  ├─ chat
-│  │  │  └─ ChatInterface.tsx
-│  │  ├─ flashcards
-│  │  │  ├─ Flashcard.tsx
-│  │  │  ├─ FlashcardDeck.tsx
-│  │  │  └─ GradingControls.tsx
-│  │  ├─ landing
-│  │  │  ├─ AnimatedMascot.tsx
-│  │  │  ├─ CustomCursor.tsx
-│  │  │  ├─ HorizontalLanding.tsx
-│  │  │  └─ LandingHero.tsx
-│  │  └─ theme
-│  │     └─ ThemeToggle.tsx
-│  ├─ hooks
-│  │  ├─ useAudioRecorder.ts
-│  │  ├─ useSpeechRecognition.ts
-│  │  └─ useTTS.ts
-│  ├─ lib
-│  │  ├─ activity.ts
-│  │  ├─ auth-user.ts
-│  │  ├─ gemini-error.ts
-│  │  ├─ gemini.ts
-│  │  ├─ languages.ts
-│  │  └─ prisma.ts
-│  ├─ store
-│  │  └─ useSessionStore.ts
-│  ├─ types
-│  │  └─ next-auth.d.ts
-│  └─ utils
-│     ├─ cefr.ts
-│     └─ sm2.ts
-├─ tailwind.config.ts
-├─ tmp
-│  └─ imagegen
-└─ tsconfig.json
+## 📜 License
 
-```
+Distributed under the MIT License. See `LICENSE` for more information.

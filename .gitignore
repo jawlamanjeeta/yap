@@ -38,3 +38,4 @@ dev-server*.log
 # Operating System files
 .DS_Store
 Thumbs.db
+.neon

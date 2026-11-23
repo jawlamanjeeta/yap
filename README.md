@@ -41,3 +41,100 @@ Password: DemoPassword123!
 
 The repeatable seed preserves existing users and creates ten starter cards each for English,
 French, Spanish, German, and Japanese. The demo account can try the full review and speaking loop.
+
+```
+yap
+├─ .agents
+├─ .prettierrc
+├─ auth.config.ts
+├─ auth.ts
+├─ eslint.config.mjs
+├─ next.config.mjs
+├─ package-lock.json
+├─ package.json
+├─ postcss.config.mjs
+├─ prisma
+│  ├─ migrations
+│  │  ├─ 20260724130000_phase_1_authentication
+│  │  │  └─ migration.sql
+│  │  └─ migration_lock.toml
+│  ├─ schema.prisma
+│  ├─ seed.ts
+│  └─ starter-decks.ts
+├─ prisma.config.ts
+├─ proxy.ts
+├─ public
+│  ├─ favicon.ico
+│  ├─ yap-hero-mascot-stickers.png
+│  └─ yap-hero-mascot.png
+├─ README.md
+├─ scripts
+├─ src
+│  ├─ actions
+│  │  ├─ auth.actions.ts
+│  │  └─ flashcard.actions.ts
+│  ├─ app
+│  │  ├─ (auth)
+│  │  │  ├─ login
+│  │  │  │  └─ page.tsx
+│  │  │  └─ signup
+│  │  │     └─ page.tsx
+│  │  ├─ api
+│  │  │  ├─ auth
+│  │  │  ├─ chat
+│  │  │  │  └─ route.ts
+│  │  │  └─ transcribe
+│  │  │     └─ route.ts
+│  │  ├─ chat
+│  │  │  └─ page.tsx
+│  │  ├─ error.tsx
+│  │  ├─ globals.css
+│  │  ├─ layout.tsx
+│  │  ├─ loading.tsx
+│  │  ├─ not-found.tsx
+│  │  ├─ page.tsx
+│  │  └─ study
+│  │     └─ [id]
+│  │        └─ page.tsx
+│  ├─ components
+│  │  ├─ auth
+│  │  │  ├─ AuthForm.tsx
+│  │  │  ├─ AuthShell.tsx
+│  │  │  └─ LogoutButton.tsx
+│  │  ├─ chat
+│  │  │  └─ ChatInterface.tsx
+│  │  ├─ flashcards
+│  │  │  ├─ Flashcard.tsx
+│  │  │  ├─ FlashcardDeck.tsx
+│  │  │  └─ GradingControls.tsx
+│  │  ├─ landing
+│  │  │  ├─ AnimatedMascot.tsx
+│  │  │  ├─ CustomCursor.tsx
+│  │  │  ├─ HorizontalLanding.tsx
+│  │  │  └─ LandingHero.tsx
+│  │  └─ theme
+│  │     └─ ThemeToggle.tsx
+│  ├─ hooks
+│  │  ├─ useAudioRecorder.ts
+│  │  ├─ useSpeechRecognition.ts
+│  │  └─ useTTS.ts
+│  ├─ lib
+│  │  ├─ activity.ts
+│  │  ├─ auth-user.ts
+│  │  ├─ gemini-error.ts
+│  │  ├─ gemini.ts
+│  │  ├─ languages.ts
+│  │  └─ prisma.ts
+│  ├─ store
+│  │  └─ useSessionStore.ts
+│  ├─ types
+│  │  └─ next-auth.d.ts
+│  └─ utils
+│     ├─ cefr.ts
+│     └─ sm2.ts
+├─ tailwind.config.ts
+├─ tmp
+│  └─ imagegen
+└─ tsconfig.json
+
+```
